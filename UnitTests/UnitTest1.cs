@@ -1,5 +1,4 @@
 using NUnit.Framework;
-
 namespace UnitTests
 {
     public class Tests
@@ -12,7 +11,7 @@ namespace UnitTests
         [Test]
         public void Test1()
         {
-            Assert.Pass();
+            var mfe = new MagicFileEncoding.MagicFileEncoding();
         }
     }
 }
