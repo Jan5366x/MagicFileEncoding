@@ -83,9 +83,7 @@ namespace MagicFileEncoding
             return defaultEncoding;
         }
         
-        
-
-        private static Encoding GetEncodingByParsing(string filename, Encoding encoding)
+        public static Encoding GetEncodingByParsing(string filename, Encoding encoding)
         {            
             var encodingVerifier = Encoding.GetEncoding(encoding.BodyName, new EncoderExceptionFallback(), new DecoderExceptionFallback());
             try

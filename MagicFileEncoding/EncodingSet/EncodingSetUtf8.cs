@@ -4,19 +4,9 @@ namespace MagicFileEncoding.EncodingSet
 {
     public class EncodingSetUtf8 : EncodingSet
     {
-        public bool Match(string filename)
+        public override Encoding GetEncoding()
         {
-            throw new System.NotImplementedException();
-        }
-
-        public bool MatchByBom(byte[] bom)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public Encoding GetEncoding()
-        {
-            throw new System.NotImplementedException();
+            return Encoding.UTF8;
         }
     }
 }

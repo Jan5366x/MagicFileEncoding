@@ -2,11 +2,13 @@
 
 namespace MagicFileEncoding.EncodingSet
 {
-    public interface EncodingSet
+    public abstract class EncodingSet
     {
-        bool Match(string filename);
-        bool MatchByBom(byte[] bom);
+        public bool Match(string filename)
+        {
+            return GetEncoding().Equals(MagicFileEncoding.GetEncodingByParsing(filename, GetEncoding()));
+        }
         
-        Encoding GetEncoding();
+        public abstract Encoding GetEncoding();
     }
 }

@@ -4,19 +4,11 @@ namespace MagicFileEncoding.EncodingSet
 {
     public class EncodingSetUtf32E : EncodingSet
     {
-        public bool Match(string filename)
-        {
-            throw new System.NotImplementedException();
-        }
+        private Encoding utf32Encoding = new UTF32Encoding(true, true);
 
-        public bool MatchByBom(byte[] bom)
+        public override Encoding GetEncoding()
         {
-            throw new System.NotImplementedException();
-        }
-
-        public Encoding GetEncoding()
-        {
-            throw new System.NotImplementedException();
+            return utf32Encoding;
         }
     }
 }
