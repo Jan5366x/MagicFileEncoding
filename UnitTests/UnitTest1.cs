@@ -40,5 +40,14 @@ namespace UnitTests
             string text = mfe.AutomaticTransform(filePath, Encoding.UTF8);
             Assert.IsTrue(String.Equals("Kleiner Test äöüÄÖÜ?ß", text, StringComparison.InvariantCulture));
         }
+        
+        [Test]
+        public void TestAnsiToUnicode()
+        {
+            string filePath = TestContext.CurrentContext.WorkDirectory + "\\TestFiles\\A_ANSI.txt";
+            var acceptableEncoding = mfe.GetAcceptableEncoding(filePath);
+            string text = mfe.AutomaticTransform(filePath, Encoding.Unicode);
+            Assert.IsTrue(String.Equals("Kleiner Test äöüÄÖÜ?ß", text));
+        }
     }
 }
