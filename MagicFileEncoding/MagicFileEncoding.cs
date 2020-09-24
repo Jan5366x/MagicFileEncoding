@@ -12,8 +12,11 @@ namespace MagicFileEncoding
 
         public MagicFileEncoding()
         {
+            // register encoding provider
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            
             SetupEncodingSets();
-
+            
             // TODO remove test output
             // encodingSets.ForEach(x => Console.WriteLine(x) );
         }
@@ -42,17 +45,28 @@ namespace MagicFileEncoding
             Encoding encoding = null;
             foreach (var encodingSet in encodingSets)
             {
-                if (!encodingSet.IsAcceptable(filename)) continue;
-                encoding ??= encodingSet.GetEncoding();
+                if (!encodingSet.IsAcceptable(this, filename)) continue;
+                encoding = encodingSet.GetEncoding();
                 acceptCount++;
             }
 
             string text;
             if (acceptCount > 1)
-                encoding = detectTextEncoding(filename, out text, 0);
+                encoding = DetectTextEncoding(filename, out text, 0);
 
             // We have no idea what this ist so we assume ASCII
             return encoding ?? Encoding.ASCII;
+        }
+
+        public string AutomaticTransform(string filename, Encoding targetEncoding)
+        { 
+            return targetEncoding.GetString(AutomaticTransformBytes(filename,targetEncoding));
+        }
+        
+        public byte[] AutomaticTransformBytes(string filename, Encoding targetEncoding)
+        { 
+            return Encoding.Convert(GetAcceptableEncoding(filename), 
+                targetEncoding, File.ReadAllBytes(filename));
         }
 
         private Encoding GetDefault()
@@ -68,7 +82,7 @@ namespace MagicFileEncoding
         // later on may appear to be ASCII initially). If taster = 0, then taster
         // becomes the length of the file (for maximum reliability). 'text' is simply
         // the string with the discovered encoding applied to the file.
-        public Encoding detectTextEncoding(string filename, out string text, int taster = 1000)
+        public Encoding DetectTextEncoding(string filename, out string text, int taster = 1000)
         {
             var b = File.ReadAllBytes(filename);
 
@@ -242,12 +256,12 @@ namespace MagicFileEncoding
         }
 
         // For netcore we use UTF8 as default encoding since ANSI isn't available
-        public static Encoding GetEncodingByBom(string filename)
+        public Encoding GetEncodingByBom(string filename)
         {
             return GetEncodingByBom(filename, Encoding.Default);
         }
 
-        public static Encoding GetEncodingByBom(string filename, Encoding defaultEncoding)
+        public Encoding GetEncodingByBom(string filename, Encoding defaultEncoding)
         {
             // Read the BOM
             var bom = new byte[4];
@@ -270,7 +284,7 @@ namespace MagicFileEncoding
             return defaultEncoding;
         }
 
-        public static Encoding GetEncodingByParsing(string filename, Encoding encoding)
+        public Encoding GetEncodingByParsing(string filename, Encoding encoding)
         {
             var encodingVerifier = Encoding.GetEncoding(encoding.BodyName, new EncoderExceptionFallback(),
                 new DecoderExceptionFallback());

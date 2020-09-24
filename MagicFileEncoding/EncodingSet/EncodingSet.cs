@@ -4,9 +4,9 @@ namespace MagicFileEncoding.EncodingSet
 {
     public abstract class EncodingSet
     {
-        public bool IsAcceptable(string filename)
+        public bool IsAcceptable(MagicFileEncoding mfe, string filename)
         {
-            return MagicFileEncoding.GetEncodingByParsing(filename, GetEncoding()) != null;
+            return mfe.GetEncodingByParsing(filename, GetEncoding()) != null;
         }
         
         public abstract Encoding GetEncoding();
