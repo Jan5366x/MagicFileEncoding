@@ -2,7 +2,7 @@
 
 namespace MagicFileEncoding.EncodingSet
 {
-    public class EncodingSetUtf8 : EncodingSet
+    public class EncodingSetBigEndianUnicode : EncodingSet
     {
         public bool Match(string filename)
         {

@@ -78,6 +78,7 @@ namespace MagicFileEncoding
             if (bom[0] == 0xfe && bom[1] == 0xff) return Encoding.BigEndianUnicode; //UTF-16BE
             if (bom[0] == 0 && bom[1] == 0 && bom[2] == 0xfe && bom[3] == 0xff) return new UTF32Encoding(true, true);  //UTF-32BE
 
+          
             // We actually have no idea what the encoding is if we reach this point, so return default
             return defaultEncoding;
         }
