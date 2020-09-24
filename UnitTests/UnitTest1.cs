@@ -38,7 +38,7 @@ namespace UnitTests
             string filePath = TestContext.CurrentContext.WorkDirectory + "\\TestFiles\\A_ANSI.txt";
             var acceptableEncoding = mfe.GetAcceptableEncoding(filePath);
             string text = mfe.AutomaticTransform(filePath,Encoding.UTF8);
-            Assert.AreEqual("Kleiner Test äöüÄÖÜ?ß", text);
+            Assert.AreEqual("Kleiner Test äöüÄÖÜ?ß", text.Trim());
         }
     }
 }

@@ -71,7 +71,7 @@ namespace MagicFileEncoding
 
         private Encoding GetDefault()
         {
-            return Encoding.ASCII;
+            return Encoding.GetEncoding("iso-8859-1");
         }
 
         // https://stackoverflow.com/questions/1025332/determine-a-strings-encoding-in-c-sharp
@@ -258,7 +258,7 @@ namespace MagicFileEncoding
         // For netcore we use UTF8 as default encoding since ANSI isn't available
         public Encoding GetEncodingByBom(string filename)
         {
-            return GetEncodingByBom(filename, Encoding.Default);
+            return GetEncodingByBom(filename, GetDefault());
         }
 
         public Encoding GetEncodingByBom(string filename, Encoding defaultEncoding)
