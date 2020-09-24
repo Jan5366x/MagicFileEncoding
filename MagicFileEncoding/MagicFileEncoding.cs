@@ -15,7 +15,7 @@ namespace MagicFileEncoding
             SetupEncodingSets();
 
             // TODO remove test output
-            encodingSets.ForEach(x => Console.WriteLine(x) );
+            // encodingSets.ForEach(x => Console.WriteLine(x) );
         }
 
         private void SetupEncodingSets()
@@ -30,18 +30,25 @@ namespace MagicFileEncoding
             {
                 encodingSets.Add((EncodingSet.EncodingSet) Activator.CreateInstance(type));
             }
+            
+            encodingSets = encodingSets.OrderBy(o=>o.Order()).ToList();
+            
         }
 
         // https://stackoverflow.com/questions/3825390/effective-way-to-find-any-files-encoding
-        public Encoding getEncoding(string filename)
+        public Encoding GetAcceptableEncoding(string filename)
         {
-            var encodingByBom = GetEncodingByBom(filename);
+            var encodingByBom = GetEncodingByBom(filename, null);
             if (encodingByBom != null)
                 return encodingByBom;
 
-            return (from encodingSet in encodingSets 
-                where encodingSet.Match(filename)
-                select encodingSet.GetEncoding()).FirstOrDefault();
+            foreach (var encoding in from encodingSet in encodingSets 
+                where encodingSet.IsAcceptable(filename)
+                select encodingSet.GetEncoding()) 
+                return encoding;
+
+            // We have no idea what this ist so we assume ASCII
+            return Encoding.ASCII;
         }
 
 

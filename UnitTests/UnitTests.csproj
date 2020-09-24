@@ -20,4 +20,16 @@
       <Folder Include="TestFiles" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Update="TestFiles\A_ANSI.txt">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="TestFiles\A_UTF-8.txt">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="TestFiles\A_UTF-8-BOM.txt">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
 </Project>

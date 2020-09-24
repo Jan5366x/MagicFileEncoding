@@ -8,5 +8,10 @@ namespace MagicFileEncoding.EncodingSet
         {
             return Encoding.UTF8;
         }
+        
+        public override int Order()
+        {
+            return 8;
+        }
     }
 }

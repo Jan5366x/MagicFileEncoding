@@ -4,11 +4,13 @@ namespace MagicFileEncoding.EncodingSet
 {
     public abstract class EncodingSet
     {
-        public bool Match(string filename)
+        public bool IsAcceptable(string filename)
         {
-            return GetEncoding().Equals(MagicFileEncoding.GetEncodingByParsing(filename, GetEncoding()));
+            return MagicFileEncoding.GetEncodingByParsing(filename, GetEncoding()) != null;
         }
         
         public abstract Encoding GetEncoding();
+
+        public abstract int Order();
     }
 }
