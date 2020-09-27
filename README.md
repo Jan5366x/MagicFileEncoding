@@ -3,6 +3,13 @@
 ### Nuget Package
 [MagicFileEncoding at nuget.org](https://www.nuget.org/packages/MagicFileEncoding/)
 
+### Usage (Preview Version)
+
+```csharp
+var mfe = new global::MagicFileEncoding.MagicFileEncoding();
+var str = mfe.AutomaticReadAllText(filename);
+```
+
 ### Fallback Encoding
 The fallback encoding is ISO-8859-1 (Latin-1) by default.
 
