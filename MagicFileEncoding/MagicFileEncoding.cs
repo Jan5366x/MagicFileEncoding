@@ -64,6 +64,7 @@ namespace MagicFileEncoding
                 acceptCount++;
             }
 
+            // TODO refactor this
             string text;
             if (acceptCount > 1)
                 encoding = DetectTextEncoding(filename, out text, 0);
@@ -78,7 +79,7 @@ namespace MagicFileEncoding
         /// <param name="filename"></param>
         /// <returns></returns>
         public string AutomaticReadAllText(string filename)
-        { 
+        {
             return Encoding.Unicode.GetString(AutomaticTransformBytes(filename, Encoding.Unicode));
         }
         
@@ -90,7 +91,9 @@ namespace MagicFileEncoding
         /// <returns></returns>
         public string AutomaticReadAllText(string filename, Encoding targetEncoding)
         { 
-            return targetEncoding.GetString(AutomaticTransformBytes(filename, targetEncoding));
+            return targetEncoding
+                .GetString(AutomaticTransformBytes(filename, targetEncoding))
+                .Trim(new[]{'\uFEFF'});
         }
         
         /// <summary>
