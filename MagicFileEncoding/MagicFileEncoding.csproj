@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <TargetFramework>netcoreapp3.1</TargetFramework>
-        <PackageVersion>1.0.0-preview</PackageVersion>
+        <PackageVersion>1.0.0-preview.2</PackageVersion>
         <Title>Magic File Encoding</Title>
         <Authors>Jan Schwien</Authors>
         <Copyright>by Jan Schwien</Copyright>
