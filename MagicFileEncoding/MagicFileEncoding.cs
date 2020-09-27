@@ -8,7 +8,9 @@ namespace MagicFileEncoding
 {
     public class MagicFileEncoding
     {
-        private List<EncodingSet.EncodingSet> encodingSets = new List<EncodingSet.EncodingSet>();
+        public Encoding FallbackEncoding { get; set; } = Encoding.GetEncoding("iso-8859-1");
+        
+        private List<EncodingSet.EncodingSet> _encodingSets = new List<EncodingSet.EncodingSet>();
 
         public MagicFileEncoding()
         {
@@ -16,10 +18,10 @@ namespace MagicFileEncoding
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             
             SetupEncodingSets();
-            
-            // TODO remove test output
-            // encodingSets.ForEach(x => Console.WriteLine(x) );
         }
+        
+        // s.Position = 0;
+        // sr.DiscardBufferedData();
 
         private void SetupEncodingSets()
         {
@@ -29,9 +31,9 @@ namespace MagicFileEncoding
                                && !type.IsAbstract
                                && typeof(EncodingSet.EncodingSet).IsAssignableFrom(type));
 
-            foreach (var type in types) encodingSets.Add((EncodingSet.EncodingSet) Activator.CreateInstance(type));
+            foreach (var type in types) _encodingSets.Add((EncodingSet.EncodingSet) Activator.CreateInstance(type));
 
-            encodingSets = encodingSets.OrderBy(o => o.Order()).ToList();
+            _encodingSets = _encodingSets.OrderBy(o => o.Order()).ToList();
         }
 
         // https://stackoverflow.com/questions/3825390/effective-way-to-find-any-files-encoding
@@ -43,7 +45,7 @@ namespace MagicFileEncoding
 
             var acceptCount = 0;
             Encoding encoding = null;
-            foreach (var encodingSet in encodingSets)
+            foreach (var encodingSet in _encodingSets)
             {
                 if (!encodingSet.IsAcceptable(this, filename)) continue;
                 encoding = encodingSet.GetEncoding();
@@ -55,7 +57,7 @@ namespace MagicFileEncoding
                 encoding = DetectTextEncoding(filename, out text, 0);
 
             // We have no idea what this ist so we assume ASCII
-            return encoding ?? Encoding.ASCII;
+            return encoding ?? FallbackEncoding;
         }
 
         public string AutomaticTransform(string filename, Encoding targetEncoding)
@@ -69,25 +71,26 @@ namespace MagicFileEncoding
                 targetEncoding, File.ReadAllBytes(filename));
         }
 
-        private Encoding GetDefault()
-        {
-            return Encoding.GetEncoding("iso-8859-1");
-        }
-
-        // https://stackoverflow.com/questions/1025332/determine-a-strings-encoding-in-c-sharp
-        // Function to detect the encoding for UTF-7, UTF-8/16/32 (bom, no bom, little
-        // & big endian), and local default codepage, and potentially other codepages.
-        // 'taster' = number of bytes to check of the file (to save processing). Higher
-        // value is slower, but more reliable (especially UTF-8 with special characters
-        // later on may appear to be ASCII initially). If taster = 0, then taster
-        // becomes the length of the file (for maximum reliability). 'text' is simply
-        // the string with the discovered encoding applied to the file.
+        /// <summary>
+        /// https://stackoverflow.com/questions/1025332/determine-a-strings-encoding-in-c-sharp
+        /// Function to detect the encoding for UTF-7, UTF-8/16/32 (bom, no bom, little
+        /// & big endian), and local default codepage, and potentially other codepages.
+        /// 'taster' = number of bytes to check of the file (to save processing). Higher
+        /// value is slower, but more reliable (especially UTF-8 with special characters
+        /// later on may appear to be ASCII initially). If taster = 0, then taster
+        /// becomes the length of the file (for maximum reliability). 'text' is simply
+        /// the string with the discovered encoding applied to the file.
+        /// </summary>
+        /// <param name="filename"></param>
+        /// <param name="text"></param>
+        /// <param name="taster"></param>
+        /// <returns></returns>
         public Encoding DetectTextEncoding(string filename, out string text, int taster = 1000)
         {
             var b = File.ReadAllBytes(filename);
 
-            //////////////// First check the low hanging fruit by checking if a
-            //////////////// BOM/signature exists (sourced from http://www.unicode.org/faq/utf_bom.html#bom4)
+            // First check the low hanging fruit by checking if a
+            // BOM/signature exists (sourced from http://www.unicode.org/faq/utf_bom.html#bom4)
             if (b.Length >= 4 && b[0] == 0x00 && b[1] == 0x00 && b[2] == 0xFE && b[3] == 0xFF)
             {
                 text = Encoding.GetEncoding("utf-32BE").GetString(b, 4, b.Length - 4);
@@ -249,16 +252,17 @@ namespace MagicFileEncoding
 
             // If all else fails, the encoding is probably (though certainly not
             // definitely) the user's local codepage! One might present to the user a
-            // list of alternative encodings as shown here: https://stackoverflow.com/questions/8509339/what-is-the-most-common-encoding-of-each-language
+            // list of alternative encodings as shown here:
+            // https://stackoverflow.com/questions/8509339/what-is-the-most-common-encoding-of-each-language
             // A full list can be found using Encoding.GetEncodings();
-            text = GetDefault().GetString(b);
-            return GetDefault();
+            text = FallbackEncoding.GetString(b);
+            return FallbackEncoding;
         }
 
         // For netcore we use UTF8 as default encoding since ANSI isn't available
         public Encoding GetEncodingByBom(string filename)
         {
-            return GetEncodingByBom(filename, GetDefault());
+            return GetEncodingByBom(filename, FallbackEncoding);
         }
 
         public Encoding GetEncodingByBom(string filename, Encoding defaultEncoding)
