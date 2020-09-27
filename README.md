@@ -1,5 +1,8 @@
 # Magic File Encoding
 
+### Nuget Package
+[MagicFileEncoding at nuget.org](https://www.nuget.org/packages/MagicFileEncoding/)
+
 ### Fallback Encoding
 The fallback encoding is ISO-8859-1 (Latin-1) by default.
 

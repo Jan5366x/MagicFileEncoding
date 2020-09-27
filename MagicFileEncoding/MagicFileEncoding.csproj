@@ -2,6 +2,14 @@
 
     <PropertyGroup>
         <TargetFramework>netcoreapp3.1</TargetFramework>
+        <PackageVersion>1.0.0-preview</PackageVersion>
+        <Title>Magic File Encoding</Title>
+        <Authors>Jan Schwien</Authors>
+        <Copyright>by Jan Schwien</Copyright>
+        <PackageProjectUrl>https://github.com/Jan5366x/MagicFileEncoding</PackageProjectUrl>
+        <PackageLicenseUrl>https://github.com/Jan5366x/MagicFileEncoding/blob/master/LICENCE.txt</PackageLicenseUrl>
+        <RepositoryUrl>https://github.com/Jan5366x/MagicFileEncoding</RepositoryUrl>
+        <PackageReleaseNotes>Alpha Release</PackageReleaseNotes>
     </PropertyGroup>
 
     <ItemGroup>
