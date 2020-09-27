@@ -68,7 +68,7 @@ namespace MagicFileEncoding
             if (acceptCount == 0 || acceptCount > 1)
                 encoding = DetectTextEncoding(filename, out _, false);
 
-            // We have no idea what this so we use the fallback
+            // We have no idea what this is so we use the fallback encoding
             return encoding ?? FallbackEncoding;
         }
 
