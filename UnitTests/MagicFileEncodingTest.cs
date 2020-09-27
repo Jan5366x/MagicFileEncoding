@@ -5,12 +5,12 @@ namespace UnitTests
 {
     public class Tests
     {
-        private MagicFileEncoding.MagicFileEncoding mfe;
+        private MagicFileEncoding.MagicFileEncoding _mfe;
         
         [SetUp]
         public void Setup()
         {
-            mfe = new MagicFileEncoding.MagicFileEncoding();
+            _mfe = new MagicFileEncoding.MagicFileEncoding();
         }
         
         [TestCase("\\TestFiles\\A_ANSI.txt")]
@@ -23,7 +23,7 @@ namespace UnitTests
         public void AutomaticReadAllText(string subFilePath)
         {
             var filePath = TestContext.CurrentContext.WorkDirectory + subFilePath;
-            Assert.AreEqual("Kleiner Test äöüÄÖÜ?ß", mfe.AutomaticReadAllText(filePath, Encoding.Unicode));
+            Assert.AreEqual("Kleiner Test äöüÄÖÜ?ß", _mfe.AutomaticReadAllText(filePath, Encoding.Unicode));
         }
     }
 }
