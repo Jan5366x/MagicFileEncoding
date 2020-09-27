@@ -8,10 +8,16 @@ namespace MagicFileEncoding
 {
     public class MagicFileEncoding
     {
+        /// <summary>
+        /// The fallback encoding (ISO-8859-1 by default)
+        /// </summary>
         public Encoding FallbackEncoding { get; set; } = Encoding.GetEncoding("iso-8859-1");
         
         private List<EncodingSet.EncodingSet> _encodingSets = new List<EncodingSet.EncodingSet>();
 
+        /// <summary>
+        /// 
+        /// </summary>
         public MagicFileEncoding()
         {
             // register encoding provider
@@ -20,6 +26,9 @@ namespace MagicFileEncoding
             SetupEncodingSets();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         private void SetupEncodingSets()
         {
             var types = AppDomain.CurrentDomain.GetAssemblies()
@@ -33,7 +42,11 @@ namespace MagicFileEncoding
             _encodingSets = _encodingSets.OrderBy(o => o.Order()).ToList();
         }
 
-        // https://stackoverflow.com/questions/3825390/effective-way-to-find-any-files-encoding
+        /// <summary>
+        /// https://stackoverflow.com/questions/3825390/effective-way-to-find-any-files-encoding
+        /// </summary>
+        /// <param name="filename"></param>
+        /// <returns></returns>
         public Encoding GetAcceptableEncoding(string filename)
         {
             var encodingByBom = GetEncodingByBom(filename, null);
@@ -58,17 +71,33 @@ namespace MagicFileEncoding
             return encoding ?? FallbackEncoding;
         }
 
-        public Encoding GetAcceptableEncoding(FileStream fileStream)
-        {
-            // TODO implement
-            return null;
-        }
-
-        public string AutomaticTransform(string filename, Encoding targetEncoding)
+        /// <summary>
+        /// target encoding is Unicode UTF16
+        /// </summary>
+        /// <param name="filename"></param>
+        /// <returns></returns>
+        public string AutomaticReadAllText(string filename)
         { 
-            return targetEncoding.GetString(AutomaticTransformBytes(filename,targetEncoding));
+            return Encoding.Unicode.GetString(AutomaticTransformBytes(filename, Encoding.Unicode));
         }
         
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="filename"></param>
+        /// <param name="targetEncoding"></param>
+        /// <returns></returns>
+        public string AutomaticReadAllText(string filename, Encoding targetEncoding)
+        { 
+            return targetEncoding.GetString(AutomaticTransformBytes(filename, targetEncoding));
+        }
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="filename"></param>
+        /// <param name="targetEncoding"></param>
+        /// <returns></returns>
         public byte[] AutomaticTransformBytes(string filename, Encoding targetEncoding)
         { 
             return Encoding.Convert(GetAcceptableEncoding(filename), 
@@ -132,9 +161,9 @@ namespace MagicFileEncoding
             } // UTF-7
 
 
-            //////////// If the code reaches here, no BOM/signature was found, so now
-            //////////// we need to 'taste' the file to see if can manually discover
-            //////////// the encoding. A high taster value is desired for UTF-8
+            // If the code reaches here, no BOM/signature was found, so now
+            // we need to 'taste' the file to see if can manually discover
+            // the encoding. A high taster value is desired for UTF-8
             if (taster == 0 || taster > b.Length)
                 taster = b.Length; // Taster size can't be bigger than the filesize obviously.
 
@@ -268,19 +297,35 @@ namespace MagicFileEncoding
             text = FallbackEncoding.GetString(b);
             return FallbackEncoding;
         }
-
-        // For netcore we use UTF8 as default encoding since ANSI isn't available
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="filename"></param>
+        /// <returns></returns>
         public Encoding GetEncodingByBom(string filename)
         {
             return GetEncodingByBom(filename, FallbackEncoding);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="filename"></param>
+        /// <param name="defaultEncoding"></param>
+        /// <returns></returns>
         public Encoding GetEncodingByBom(string filename, Encoding defaultEncoding)
         {
             using var file = new FileStream(filename, FileMode.Open, FileAccess.Read);
             return GetEncodingByBom(file, defaultEncoding);
         }
         
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="fileStream"></param>
+        /// <param name="defaultEncoding"></param>
+        /// <returns></returns>
         public Encoding GetEncodingByBom(FileStream fileStream, Encoding defaultEncoding)
         {
             // Read the BOM
@@ -301,6 +346,12 @@ namespace MagicFileEncoding
             return defaultEncoding;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="filename"></param>
+        /// <param name="encoding"></param>
+        /// <returns></returns>
         public Encoding GetEncodingByParsing(string filename, Encoding encoding)
         {
             var encodingVerifier = Encoding.GetEncoding(encoding.BodyName, new EncoderExceptionFallback(),
