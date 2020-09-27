@@ -19,7 +19,7 @@ namespace UnitTests
         {
             string filePath = TestContext.CurrentContext.WorkDirectory + "\\TestFiles\\A_UTF-8-BOM.txt";
             var acceptableEncoding = mfe.GetAcceptableEncoding(filePath);
-            string text = mfe.AutomaticTransform(filePath,Encoding.UTF8);
+            string text = mfe.AutomaticReadAllText(filePath, Encoding.UTF8);
             Assert.IsTrue(String.Equals("Kleiner Test äöüÄÖÜ?ß", text, StringComparison.InvariantCulture));
         }
         
@@ -28,7 +28,7 @@ namespace UnitTests
         {
             string filePath = TestContext.CurrentContext.WorkDirectory + "\\TestFiles\\A_UTF-8.txt";
             var acceptableEncoding = mfe.GetAcceptableEncoding(filePath);
-            string text = mfe.AutomaticTransform(filePath,Encoding.UTF8);
+            string text = mfe.AutomaticReadAllText(filePath, Encoding.UTF8);
             Assert.IsTrue(String.Equals("Kleiner Test äöüÄÖÜ?ß", text, StringComparison.InvariantCulture));
         }
         
@@ -37,7 +37,7 @@ namespace UnitTests
         {
             string filePath = TestContext.CurrentContext.WorkDirectory + "\\TestFiles\\A_ANSI.txt";
             var acceptableEncoding = mfe.GetAcceptableEncoding(filePath);
-            string text = mfe.AutomaticTransform(filePath, Encoding.UTF8);
+            string text = mfe.AutomaticReadAllText(filePath, Encoding.UTF8);
             Assert.IsTrue(String.Equals("Kleiner Test äöüÄÖÜ?ß", text, StringComparison.InvariantCulture));
         }
         
@@ -46,7 +46,7 @@ namespace UnitTests
         {
             string filePath = TestContext.CurrentContext.WorkDirectory + "\\TestFiles\\A_ANSI.txt";
             var acceptableEncoding = mfe.GetAcceptableEncoding(filePath);
-            string text = mfe.AutomaticTransform(filePath, Encoding.Unicode);
+            string text = mfe.AutomaticReadAllText(filePath, Encoding.Unicode);
             Assert.IsTrue(String.Equals("Kleiner Test äöüÄÖÜ?ß", text));
         }
     }
