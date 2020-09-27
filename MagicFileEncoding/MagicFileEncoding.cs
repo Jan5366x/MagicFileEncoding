@@ -19,9 +19,6 @@ namespace MagicFileEncoding
             
             SetupEncodingSets();
         }
-        
-        // s.Position = 0;
-        // sr.DiscardBufferedData();
 
         private void SetupEncodingSets()
         {
@@ -45,9 +42,10 @@ namespace MagicFileEncoding
 
             var acceptCount = 0;
             Encoding encoding = null;
-            foreach (var encodingSet in _encodingSets)
-            {
-                if (!encodingSet.IsAcceptable(this, filename)) continue;
+            foreach (var encodingSet in _encodingSets
+                .Where(encodingSet => encodingSet
+                    .IsAcceptable(this, filename))) {
+                
                 encoding = encodingSet.GetEncoding();
                 acceptCount++;
             }
@@ -58,6 +56,12 @@ namespace MagicFileEncoding
 
             // We have no idea what this ist so we assume ASCII
             return encoding ?? FallbackEncoding;
+        }
+
+        public Encoding GetAcceptableEncoding(FileStream fileStream)
+        {
+            // TODO implement
+            return null;
         }
 
         public string AutomaticTransform(string filename, Encoding targetEncoding)
@@ -151,7 +155,12 @@ namespace MagicFileEncoding
                 {
                     i += 1;
                     continue;
-                } // If all characters are below 0x80, then it is valid UTF8, but UTF8 is not 'required' (and therefore the text is more desirable to be treated as the default codepage of the computer). Hence, there's no "utf8 = true;" code unlike the next three checks.
+                } 
+                
+                // If all characters are below 0x80, then it is valid UTF8,
+                // but UTF8 is not 'required' (and therefore the text is more desirable to be treated as
+                // the default codepage of the computer). Hence, there's no "utf8 = true;"
+                // code unlike the next three checks.
 
                 if (b[i] >= 0xC2 && b[i] <= 0xDF && b[i + 1] >= 0x80 && b[i + 1] < 0xC0)
                 {
@@ -191,7 +200,8 @@ namespace MagicFileEncoding
             // We simply look for zeroes in odd or even byte places, and if a certain
             // threshold is reached, the code is 'probably' UF-16.          
             var
-                threshold = 0.1; // proportion of chars step 2 which must be zeroed to be diagnosed as utf-16. 0.1 = 10%
+                // proportion of chars step 2 which must be zeroed to be diagnosed as utf-16. 0.1 = 10%
+                threshold = 0.1; 
             var count = 0;
             for (var n = 0; n < taster; n += 2)
                 if (b[n] == 0)
@@ -267,13 +277,16 @@ namespace MagicFileEncoding
 
         public Encoding GetEncodingByBom(string filename, Encoding defaultEncoding)
         {
+            using var file = new FileStream(filename, FileMode.Open, FileAccess.Read);
+            return GetEncodingByBom(file, defaultEncoding);
+        }
+        
+        public Encoding GetEncodingByBom(FileStream fileStream, Encoding defaultEncoding)
+        {
             // Read the BOM
             var bom = new byte[4];
-
-            using (var file = new FileStream(filename, FileMode.Open, FileAccess.Read))
-            {
-                file.Read(bom, 0, 4);
-            }
+            fileStream.Position = 0;
+            fileStream.Read(bom, 0, 4);
 
             // Analyze the BOM
             if (bom[0] == 0x2b && bom[1] == 0x2f && bom[2] == 0x76) return Encoding.UTF7;
