@@ -64,13 +64,11 @@ namespace MagicFileEncoding
                 encoding = encodingSet.GetEncoding();
                 acceptCount++;
             }
+            
+            if (acceptCount == 0 || acceptCount > 1)
+                encoding = DetectTextEncoding(filename, out _, false);
 
-            // TODO refactor this
-            string text;
-            if (acceptCount > 1)
-                encoding = DetectTextEncoding(filename, out text, 0);
-
-            // We have no idea what this ist so we assume ASCII
+            // We have no idea what this so we use the fallback
             return encoding ?? FallbackEncoding;
         }
 
@@ -121,9 +119,10 @@ namespace MagicFileEncoding
         /// </summary>
         /// <param name="filename"></param>
         /// <param name="text"></param>
+        /// <param name="provideText"></param>
         /// <param name="taster"></param>
         /// <returns></returns>
-        public Encoding DetectTextEncoding(string filename, out string text, int taster = 1000)
+        public Encoding DetectTextEncoding(string filename, out string text, bool provideText, int taster = 0)
         {
             var b = File.ReadAllBytes(filename);
 
@@ -131,37 +130,37 @@ namespace MagicFileEncoding
             // BOM/signature exists (sourced from http://www.unicode.org/faq/utf_bom.html#bom4)
             if (b.Length >= 4 && b[0] == 0x00 && b[1] == 0x00 && b[2] == 0xFE && b[3] == 0xFF)
             {
-                text = Encoding.GetEncoding("utf-32BE").GetString(b, 4, b.Length - 4);
+                text = provideText ? Encoding.GetEncoding("utf-32BE").GetString(b, 4, b.Length - 4) : null;
                 return Encoding.GetEncoding("utf-32BE");
             } // UTF-32, big-endian 
 
             if (b.Length >= 4 && b[0] == 0xFF && b[1] == 0xFE && b[2] == 0x00 && b[3] == 0x00)
             {
-                text = Encoding.UTF32.GetString(b, 4, b.Length - 4);
+                text = provideText ? Encoding.UTF32.GetString(b, 4, b.Length - 4) : null;
                 return Encoding.UTF32;
             } // UTF-32, little-endian
 
             if (b.Length >= 2 && b[0] == 0xFE && b[1] == 0xFF)
             {
-                text = Encoding.BigEndianUnicode.GetString(b, 2, b.Length - 2);
+                text = provideText ? Encoding.BigEndianUnicode.GetString(b, 2, b.Length - 2) : null;
                 return Encoding.BigEndianUnicode;
             } // UTF-16, big-endian
 
             if (b.Length >= 2 && b[0] == 0xFF && b[1] == 0xFE)
             {
-                text = Encoding.Unicode.GetString(b, 2, b.Length - 2);
+                text = provideText ? Encoding.Unicode.GetString(b, 2, b.Length - 2) : null;
                 return Encoding.Unicode;
             } // UTF-16, little-endian
 
             if (b.Length >= 3 && b[0] == 0xEF && b[1] == 0xBB && b[2] == 0xBF)
             {
-                text = Encoding.UTF8.GetString(b, 3, b.Length - 3);
+                text = provideText ? Encoding.UTF8.GetString(b, 3, b.Length - 3) : null;
                 return Encoding.UTF8;
             } // UTF-8
 
             if (b.Length >= 3 && b[0] == 0x2b && b[1] == 0x2f && b[2] == 0x76)
             {
-                text = Encoding.UTF7.GetString(b, 3, b.Length - 3);
+                text = provideText ? Encoding.UTF7.GetString(b, 3, b.Length - 3) : null;
                 return Encoding.UTF7;
             } // UTF-7
 
@@ -225,7 +224,7 @@ namespace MagicFileEncoding
 
             if (utf8)
             {
-                text = Encoding.UTF8.GetString(b);
+                text = provideText ? Encoding.UTF8.GetString(b) : null;
                 return Encoding.UTF8;
             }
 
@@ -242,7 +241,7 @@ namespace MagicFileEncoding
                     count++;
             if ((double) count / taster > threshold)
             {
-                text = Encoding.BigEndianUnicode.GetString(b);
+                text = provideText ? Encoding.BigEndianUnicode.GetString(b) : null;
                 return Encoding.BigEndianUnicode;
             }
 
@@ -252,7 +251,7 @@ namespace MagicFileEncoding
                     count++;
             if ((double) count / taster > threshold)
             {
-                text = Encoding.Unicode.GetString(b);
+                text = provideText ? Encoding.Unicode.GetString(b) : null;
                 return Encoding.Unicode;
             } // (little-endian)
 
@@ -284,7 +283,7 @@ namespace MagicFileEncoding
                     try
                     {
                         var internalEnc = Encoding.ASCII.GetString(nb);
-                        text = Encoding.GetEncoding(internalEnc).GetString(b);
+                        text = provideText ? Encoding.GetEncoding(internalEnc).GetString(b) : null;
                         return Encoding.GetEncoding(internalEnc);
                     }
                     catch
@@ -299,7 +298,7 @@ namespace MagicFileEncoding
             // list of alternative encodings as shown here:
             // https://stackoverflow.com/questions/8509339/what-is-the-most-common-encoding-of-each-language
             // A full list can be found using Encoding.GetEncodings();
-            text = FallbackEncoding.GetString(b);
+            text = provideText ? FallbackEncoding.GetString(b) : null;
             return FallbackEncoding;
         }
         
