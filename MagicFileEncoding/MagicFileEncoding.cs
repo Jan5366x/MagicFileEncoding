@@ -16,7 +16,7 @@ namespace MagicFileEncoding
         private List<EncodingSet.EncodingSet> _encodingSets = new List<EncodingSet.EncodingSet>();
 
         /// <summary>
-        /// 
+        /// Default constructor
         /// </summary>
         public MagicFileEncoding()
         {
@@ -27,7 +27,7 @@ namespace MagicFileEncoding
         }
 
         /// <summary>
-        /// 
+        /// Setup encoding sets via reflection
         /// </summary>
         private void SetupEncodingSets()
         {
@@ -43,6 +43,7 @@ namespace MagicFileEncoding
         }
 
         /// <summary>
+        /// Find a acceptable encoding to open a given file
         /// https://stackoverflow.com/questions/3825390/effective-way-to-find-any-files-encoding
         /// </summary>
         /// <param name="filename"></param>
