@@ -6,7 +6,7 @@ using System.Text;
 
 namespace MagicFileEncoding
 {
-    public class MagicFileEncoding
+    public class FileEncoding
     {
         /// <summary>
         /// The fallback encoding<br />
@@ -19,7 +19,7 @@ namespace MagicFileEncoding
         /// <summary>
         /// Default constructor
         /// </summary>
-        public MagicFileEncoding()
+        public FileEncoding()
         {
             // register encoding provider
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);

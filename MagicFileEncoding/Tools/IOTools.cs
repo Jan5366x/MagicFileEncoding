@@ -1,6 +1,8 @@
-﻿using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 
-namespace MagicFileEncoding
+namespace MagicFileEncoding.Tools
 {
     public class IOTools
     {
@@ -39,13 +41,64 @@ namespace MagicFileEncoding
                 // Read one byte from each file.
                 file1Byte = fs1.ReadByte();
                 file2Byte = fs2.ReadByte();
-            }
-            while ((file1Byte == file2Byte) && (file1Byte != -1));
+            } while ((file1Byte == file2Byte) && (file1Byte != -1));
 
             // Return the success of the comparison. "file1byte" is
             // equal to "file2byte" at this point only if the files are
             // the same.
             return ((file1Byte - file2Byte) == 0);
+        }
+
+        public static void WalkTree(string root, Func<string, bool> fileWalker, bool strict = false)
+        {
+            var dirs = new Stack<string>(20);
+
+            if (!Directory.Exists(root))
+                throw new DirectoryNotFoundException(root);
+
+            dirs.Push(root);
+
+            while (dirs.Count > 0)
+            {
+                var currentDir = dirs.Pop();
+                string[] subDirs;
+                try
+                {
+                    subDirs = Directory.GetDirectories(currentDir);
+                }
+                catch
+                {
+                    if (strict) throw;
+                    continue;
+                }
+
+                string[] files;
+                try
+                {
+                    files = Directory.GetFiles(currentDir);
+                }
+                catch
+                {
+                    if (strict) throw;
+                    continue;
+                }
+
+                foreach (var file in files)
+                {
+                    try
+                    {
+                        // Perform action
+                        if (file != null) fileWalker.Invoke(file);
+                    }
+                    catch
+                    {
+                        if (strict) throw;
+                    }
+                }
+                
+                foreach (var str in subDirs)
+                    dirs.Push(str);
+            }
         }
     }
 }

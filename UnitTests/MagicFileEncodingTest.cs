@@ -1,6 +1,7 @@
 using System.IO;
 using System.Text;
 using MagicFileEncoding;
+using MagicFileEncoding.Tools;
 using NUnit.Framework;
 using UnitTests.TestHelper;
 
@@ -8,12 +9,12 @@ namespace UnitTests
 {
     public class Tests
     {
-        private MagicFileEncoding.MagicFileEncoding _mfe;
+        private MagicFileEncoding.FileEncoding _mfe;
         
         [SetUp]
         public void Setup()
         {
-            _mfe = new MagicFileEncoding.MagicFileEncoding();
+            _mfe = new MagicFileEncoding.FileEncoding();
         }
         
         [TestCase("/TestFiles/A_ANSI.txt")]
