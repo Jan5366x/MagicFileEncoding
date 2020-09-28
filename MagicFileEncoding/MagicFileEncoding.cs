@@ -83,7 +83,7 @@ namespace MagicFileEncoding
         }
         
         /// <summary>
-        /// 
+        /// Automatic detect acceptable encoding and read all text from a given file
         /// </summary>
         /// <param name="filename"></param>
         /// <param name="targetEncoding"></param>
@@ -94,7 +94,29 @@ namespace MagicFileEncoding
                 .GetString(AutomaticTransformBytes(filename, targetEncoding))
                 .Trim(new[]{'\uFEFF'});
         }
+
+        /// <summary>
+        /// Write all text to a given file in the default encoding
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="contents"></param>
+        /// <see cref="Encoding.Default"/>
+        public void WriteAllText(string path, string contents)
+        {
+            File.WriteAllText(path, contents, Encoding.Default);
+        }
         
+        /// <summary>
+        /// Write all text to a given file in a specific encoding
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="contents"></param>
+        /// <param name="targetEncoding"></param>
+        public void WriteAllText(string path, string contents, Encoding targetEncoding)
+        {
+            File.WriteAllText(path, contents, targetEncoding);
+        }
+
         /// <summary>
         /// 
         /// </summary>
