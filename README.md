@@ -4,7 +4,7 @@ The Magic File Encoding helps to load and transform from simple an closed scope 
 
 Be aware of possible transformation issues if the target encoding is more simple than the source encoding.
 
-I recommend to write unit tests for your given tasks to ensure the load transformation works in expected ways for your use case.
+It is strongly recommended to write unit tests for your use case to ensure the load and transformation works as expected.
 
 ### Nuget Package
 [MagicFileEncoding at nuget.org](https://www.nuget.org/packages/MagicFileEncoding/)
