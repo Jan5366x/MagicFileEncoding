@@ -51,22 +51,11 @@ namespace MagicFileEncoding
         /// <returns></returns>
         public Encoding GetAcceptableEncoding(string filename)
         {
-            var encodingByBom = GetEncodingByBom(filename, null);
-            if (encodingByBom != null)
-                return encodingByBom;
-
-            var acceptCount = 0;
-            Encoding encoding = null;
-            foreach (var encodingSet in _encodingSets
-                .Where(encodingSet => encodingSet
-                    .IsAcceptable(this, filename))) {
-                
-                encoding = encodingSet.GetEncoding();
-                acceptCount++;
-            }
+            var encoding = GetEncodingByBom(filename, null);
+            if (encoding != null)
+                return encoding;
             
-            if (acceptCount == 0 || acceptCount > 1)
-                encoding = DetectTextEncoding(filename, out _, false);
+            encoding = DetectTextEncoding(filename, out _, false);;
 
             // We have no idea what this is so we use the fallback encoding
             return encoding ?? FallbackEncoding;
