@@ -12,10 +12,15 @@ It is strongly recommended to write unit tests for your use case to ensure the l
 ### Usage (Preview Version)
 
 ```csharp
+// read a text file
 var mfe = new global::MagicFileEncoding.MagicFileEncoding();
 var str = mfe.AutomaticReadAllText(filename);
 ```
-
+```csharp
+// write a text file
+var mfe = new global::MagicFileEncoding.MagicFileEncoding();
+ _mfe.WriteAllText(tmpFile.Path, text, Encoding.UTF8);
+```
 ### Fallback Encoding
 The fallback encoding is ISO-8859-1 (Latin-1) by default but can be changed via property.
 
