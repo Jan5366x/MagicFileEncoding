@@ -12,7 +12,7 @@ namespace MagicFileEncoding
         /// The fallback encoding<br />
         /// <i>ISO-8859-1 (Latin-1)by default</i>
         /// </summary>
-        public Encoding FallbackEncoding { get; set; } = Encoding.GetEncoding("iso-8859-1");
+        public Encoding FallbackEncoding { get; set; } = AdditionalEncoding.ISO_8859_1;
         
         private List<EncodingSet.EncodingSet> _encodingSets = new List<EncodingSet.EncodingSet>();
 
