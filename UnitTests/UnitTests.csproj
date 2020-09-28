@@ -18,29 +18,25 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="TestFiles" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <None Update="TestFiles\A_ANSI.txt">
+      <None Update="TestFiles\SimpleFiles\A_ANSI.txt">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
-      <None Update="TestFiles\A_UTF-8.txt">
+      <None Update="TestFiles\SimpleFiles\A_ISO-8859-1.txt">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
-      <None Update="TestFiles\A_UTF-8-BOM.txt">
+      <None Update="TestFiles\SimpleFiles\A_UTF-16-BE-BOM.txt">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
-      <None Update="TestFiles\A_ISO-8859-1.txt">
+      <None Update="TestFiles\SimpleFiles\A_UTF-16-LE-BOM.txt">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
-      <None Update="TestFiles\A_UTF-16-BE-BOM.txt">
+      <None Update="TestFiles\SimpleFiles\A_UTF-8.txt">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
-      <None Update="TestFiles\A_UTF-16-LE-BOM.txt">
+      <None Update="TestFiles\SimpleFiles\A_UTF-8-BOM.txt">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
-      <None Update="TestFiles\A_Windows-1252.txt">
+      <None Update="TestFiles\SimpleFiles\A_Windows-1252.txt">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
     </ItemGroup>
