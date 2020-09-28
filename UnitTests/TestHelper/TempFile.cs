@@ -5,20 +5,18 @@ namespace UnitTests.TestHelper
 {
     public class TempFile : IDisposable
     {
-        private string _path;
-
         public TempFile()
         {
-            _path = System.IO.Path.GetTempFileName();
+            Path = System.IO.Path.GetTempFileName();
         }
 
-        public string Path => _path;
-        
+        public string Path { get; }
+
         public void Dispose()
         {
-            if(File.Exists(_path))
+            if(File.Exists(Path))
             {
-                File.Delete(_path);
+                File.Delete(Path);
             }
         }
     }
