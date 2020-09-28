@@ -1,5 +1,11 @@
 # Magic File Encoding
 
+The Magic File Encoding helps to load and transform from simple an closed scope char set text files.
+
+Be aware of possible transformation issues if the target encoding is more simple than the source encoding.
+
+I recommend to write unit tests for your given tasks to ensure the load transformation works in expected ways for your use case.
+
 ### Nuget Package
 [MagicFileEncoding at nuget.org](https://www.nuget.org/packages/MagicFileEncoding/)
 
@@ -11,7 +17,7 @@ var str = mfe.AutomaticReadAllText(filename);
 ```
 
 ### Fallback Encoding
-The fallback encoding is ISO-8859-1 (Latin-1) by default.
+The fallback encoding is ISO-8859-1 (Latin-1) by default but can be changed via property.
 
 (Because this lib was designed for the german culture space)
 
