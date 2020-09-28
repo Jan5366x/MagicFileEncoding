@@ -6,27 +6,32 @@ Be aware of possible transformation issues if the target encoding is more simple
 
 It is strongly recommended to write unit tests for your use case to ensure the load and transformation works as expected.
 
-### Nuget Package
+## Nuget Package
 [MagicFileEncoding at nuget.org](https://www.nuget.org/packages/MagicFileEncoding/)
 
-### Usage (Preview Version)
+## Usage
 
+#### Read a text file
 ```csharp
-// read a text file
-var mfe = new global::MagicFileEncoding.MagicFileEncoding();
-var str = mfe.AutomaticReadAllText(filename);
+new FileEncoding().AutomaticReadAllText(filename);
 ```
+#### Write a text file
 ```csharp
 // write a text file
-var mfe = new global::MagicFileEncoding.MagicFileEncoding();
- _mfe.WriteAllText(tmpFile.Path, text, Encoding.UTF8);
+new FileEncoding().WriteAllText(tmpFile.Path, text, Encoding.UTF8);
 ```
-### Fallback Encoding
+#### Change fallback (default) encoding
+```csharp
+var fe = new cFileEncoding();
+fe.FallbackEncoding = Encoding.Unicode;
+var str = fe.AutomaticReadAllText(filename);
+```
+## Fallback Encoding
 The fallback encoding is ISO-8859-1 (Latin-1) by default but can be changed via property.
 
 (Because this lib was designed for the german culture space)
 
-# Credits
+## Credits
 This work is heavily based on the following stack overflow articles:<br />
 [effective-way-to-find-any-files-encoding](https://stackoverflow.com/questions/3825390/effective-way-to-find-any-files-encoding) <br />
 [determine-a-strings-encoding-in-c-sharp](https://stackoverflow.com/questions/1025332/determine-a-strings-encoding-in-c-sharp) <br />
