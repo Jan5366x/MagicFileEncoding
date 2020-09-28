@@ -41,12 +41,12 @@ namespace MagicFileEncoding.Tools
                 // Read one byte from each file.
                 file1Byte = fs1.ReadByte();
                 file2Byte = fs2.ReadByte();
-            } while ((file1Byte == file2Byte) && (file1Byte != -1));
+            } while (file1Byte == file2Byte && file1Byte != -1);
 
             // Return the success of the comparison. "file1byte" is
             // equal to "file2byte" at this point only if the files are
             // the same.
-            return ((file1Byte - file2Byte) == 0);
+            return file1Byte - file2Byte == 0;
         }
 
         public static void WalkTree(string root, Func<string, bool> fileWalker, bool strict = false)
