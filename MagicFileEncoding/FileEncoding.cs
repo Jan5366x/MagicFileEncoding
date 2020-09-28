@@ -16,15 +16,9 @@ namespace MagicFileEncoding
         
         private List<EncodingSet.EncodingSet> _encodingSets = new List<EncodingSet.EncodingSet>();
 
-        /// <summary>
-        /// Default constructor
-        /// </summary>
         public FileEncoding()
         {
-            // register encoding provider
-            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-            
-            SetupEncodingSets();
+            // SetupEncodingSets();
         }
 
         /// <summary>
@@ -38,7 +32,8 @@ namespace MagicFileEncoding
                                && !type.IsAbstract
                                && typeof(EncodingSet.EncodingSet).IsAssignableFrom(type));
 
-            foreach (var type in types) _encodingSets.Add((EncodingSet.EncodingSet) Activator.CreateInstance(type));
+            foreach (var type in types) 
+                _encodingSets.Add((EncodingSet.EncodingSet) Activator.CreateInstance(type));
 
             _encodingSets = _encodingSets.OrderBy(o => o.Order()).ToList();
         }
