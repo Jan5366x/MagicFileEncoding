@@ -22,7 +22,7 @@ new FileEncoding().WriteAllText(tmpFile.Path, text, Encoding.UTF8);
 ```
 #### Change fallback (default) encoding
 ```csharp
-var fe = new cFileEncoding();
+var fe = new FileEncoding();
 fe.FallbackEncoding = Encoding.Unicode;
 var str = fe.AutomaticReadAllText(filename);
 ```
