@@ -7,7 +7,8 @@ using UnitTests.TestHelper;
 
 namespace UnitTests
 {
-    public class Tests
+    [TestFixture]
+    public class SimpleFilesTest
     {
         private FileEncoding _mfe;
         
