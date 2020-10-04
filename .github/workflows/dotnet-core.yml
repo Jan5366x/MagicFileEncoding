@@ -8,11 +8,10 @@ on:
 
 jobs:
   build:
-    name: Build on Linux and Windows
+    name: Test
     strategy:
       matrix:
         os: ['ubuntu-latest', 'windows-latest']
-        containers: [1, 2]
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v2
