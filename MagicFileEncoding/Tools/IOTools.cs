@@ -12,9 +12,6 @@ namespace MagicFileEncoding.Tools
         /// are the same. A return value of any other value indicates that the
         /// files are not the same.
         /// </summary>
-        /// <param name="file1"></param>
-        /// <param name="file2"></param>
-        /// <returns></returns>
         public static bool FileCompare(string file1, string file2)
         {
             int file1Byte;
@@ -49,6 +46,14 @@ namespace MagicFileEncoding.Tools
             return file1Byte - file2Byte == 0;
         }
 
+        /// <summary>
+        /// Walk File System Tree 
+        /// </summary>
+        /// <param name="root">The root folder to start</param>
+        /// <param name="fileWalker">Function to handle detected files</param>
+        /// <param name="strict">If <i>true</i> this method will throw exceptions if the file or folder
+        /// structure gets modified in a disruptive way (like deletion or renaming)</param>
+        /// <exception cref="DirectoryNotFoundException"></exception>
         public static void WalkTree(string root, Func<string, bool> fileWalker, bool strict = false)
         {
             var dirs = new Stack<string>(20);

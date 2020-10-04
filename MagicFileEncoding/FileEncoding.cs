@@ -42,8 +42,6 @@ namespace MagicFileEncoding
         /// Find a acceptable encoding to open a given file
         /// https://stackoverflow.com/questions/3825390/effective-way-to-find-any-files-encoding
         /// </summary>
-        /// <param name="filename"></param>
-        /// <returns></returns>
         public Encoding GetAcceptableEncoding(string filename)
         {
             var encoding = GetEncodingByBom(filename, null);
@@ -59,8 +57,6 @@ namespace MagicFileEncoding
         /// <summary>
         /// target encoding is Unicode UTF16
         /// </summary>
-        /// <param name="filename"></param>
-        /// <returns></returns>
         public string AutomaticReadAllText(string filename)
         {
             return Encoding.Unicode.GetString(AutomaticTransformBytes(filename, Encoding.Unicode));
@@ -69,9 +65,6 @@ namespace MagicFileEncoding
         /// <summary>
         /// Automatic detect acceptable encoding and read all text from a given file
         /// </summary>
-        /// <param name="filename"></param>
-        /// <param name="targetEncoding"></param>
-        /// <returns></returns>
         public string AutomaticReadAllText(string filename, Encoding targetEncoding)
         { 
             return targetEncoding
@@ -82,8 +75,6 @@ namespace MagicFileEncoding
         /// <summary>
         /// Write all text to a given file in the default encoding
         /// </summary>
-        /// <param name="path"></param>
-        /// <param name="contents"></param>
         /// <see cref="Encoding.Default"/>
         public void WriteAllText(string path, string contents)
         {
@@ -93,20 +84,14 @@ namespace MagicFileEncoding
         /// <summary>
         /// Write all text to a given file in a specific encoding
         /// </summary>
-        /// <param name="path"></param>
-        /// <param name="contents"></param>
-        /// <param name="targetEncoding"></param>
         public void WriteAllText(string path, string contents, Encoding targetEncoding)
         {
             File.WriteAllText(path, contents, targetEncoding);
         }
 
         /// <summary>
-        /// 
+        /// Automatic Transform Bytes
         /// </summary>
-        /// <param name="filename"></param>
-        /// <param name="targetEncoding"></param>
-        /// <returns></returns>
         public byte[] AutomaticTransformBytes(string filename, Encoding targetEncoding)
         { 
             return Encoding.Convert(GetAcceptableEncoding(filename), 
@@ -123,11 +108,6 @@ namespace MagicFileEncoding
         /// becomes the length of the file (for maximum reliability). 'text' is simply
         /// the string with the discovered encoding applied to the file.
         /// </summary>
-        /// <param name="filename"></param>
-        /// <param name="text"></param>
-        /// <param name="provideText"></param>
-        /// <param name="taster"></param>
-        /// <returns></returns>
         public Encoding DetectTextEncoding(string filename, out string text, bool provideText, int taster = 0)
         {
             var b = File.ReadAllBytes(filename);
@@ -311,8 +291,6 @@ namespace MagicFileEncoding
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="filename"></param>
-        /// <returns></returns>
         public Encoding GetEncodingByBom(string filename)
         {
             return GetEncodingByBom(filename, FallbackEncoding);
@@ -321,9 +299,6 @@ namespace MagicFileEncoding
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="filename"></param>
-        /// <param name="defaultEncoding"></param>
-        /// <returns></returns>
         public Encoding GetEncodingByBom(string filename, Encoding defaultEncoding)
         {
             using var file = new FileStream(filename, FileMode.Open, FileAccess.Read);
@@ -333,9 +308,6 @@ namespace MagicFileEncoding
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="fileStream"></param>
-        /// <param name="defaultEncoding"></param>
-        /// <returns></returns>
         public Encoding GetEncodingByBom(FileStream fileStream, Encoding defaultEncoding)
         {
             // Read the BOM
@@ -359,9 +331,6 @@ namespace MagicFileEncoding
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="filename"></param>
-        /// <param name="encoding"></param>
-        /// <returns></returns>
         public Encoding GetEncodingByParsing(string filename, Encoding encoding)
         {
             var encodingVerifier = Encoding.GetEncoding(encoding.BodyName, new EncoderExceptionFallback(),
