@@ -17,7 +17,6 @@ var text = new FileEncoding().AutomaticReadAllText(filename);
 ```
 #### Write a text file
 ```csharp
-// write a text file
 new FileEncoding().WriteAllText(tmpFile.Path, text, Encoding.UTF8);
 ```
 #### Just detect suitable encoding
