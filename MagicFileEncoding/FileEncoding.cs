@@ -48,7 +48,7 @@ namespace MagicFileEncoding
             if (encoding != null)
                 return encoding;
             
-            encoding = DetectTextEncoding(filename, out _, false);;
+            encoding = DetectTextEncoding(filename, out _, false);
 
             // We have no idea what this is so we use the fallback encoding
             return encoding ?? FallbackEncoding;
@@ -218,9 +218,7 @@ namespace MagicFileEncoding
             // The next check is a heuristic attempt to detect UTF-16 without a BOM.
             // We simply look for zeroes in odd or even byte places, and if a certain
             // threshold is reached, the code is 'probably' UF-16.          
-            var
-                // proportion of chars step 2 which must be zeroed to be diagnosed as utf-16. 0.1 = 10%
-                threshold = 0.1; 
+            var threshold = 0.1; // proportion of chars step 2 which must be zeroed to be diagnosed as utf-16. 0.1 = 10%
             var count = 0;
             for (var n = 0; n < taster; n += 2)
                 if (b[n] == 0)
