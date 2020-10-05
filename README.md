@@ -13,12 +13,16 @@ It is strongly recommended to write unit tests for your use case to ensure the l
 
 #### Read a text file
 ```csharp
-new FileEncoding().AutomaticReadAllText(filename);
+var text = new FileEncoding().AutomaticReadAllText(filename);
 ```
 #### Write a text file
 ```csharp
 // write a text file
 new FileEncoding().WriteAllText(tmpFile.Path, text, Encoding.UTF8);
+```
+#### Just detect suitable encoding
+```csharp
+var encoding = new FileEncoding().GetAcceptableEncoding(filename);
 ```
 #### Change fallback (default) encoding
 ```csharp
