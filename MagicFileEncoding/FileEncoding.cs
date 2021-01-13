@@ -14,30 +14,6 @@ namespace MagicFileEncoding
         /// </summary>
         public Encoding FallbackEncoding { get; set; } = AdditionalEncoding.ISO_8859_1;
         
-        private List<EncodingSet.EncodingSet> _encodingSets = new List<EncodingSet.EncodingSet>();
-
-        public FileEncoding()
-        {
-            // SetupEncodingSets();
-        }
-
-        /// <summary>
-        /// Setup encoding sets via reflection
-        /// </summary>
-        private void SetupEncodingSets()
-        {
-            var types = AppDomain.CurrentDomain.GetAssemblies()
-                .SelectMany(t => t.GetTypes())
-                .Where(type => type.IsClass
-                               && !type.IsAbstract
-                               && typeof(EncodingSet.EncodingSet).IsAssignableFrom(type));
-
-            foreach (var type in types) 
-                _encodingSets.Add((EncodingSet.EncodingSet) Activator.CreateInstance(type));
-
-            _encodingSets = _encodingSets.OrderBy(o => o.Order()).ToList();
-        }
-
         /// <summary>
         /// Find a acceptable encoding to open a given file
         /// https://stackoverflow.com/questions/3825390/effective-way-to-find-any-files-encoding
@@ -116,39 +92,40 @@ namespace MagicFileEncoding
             // BOM/signature exists (sourced from http://www.unicode.org/faq/utf_bom.html#bom4)
             if (b.Length >= 4 && b[0] == 0x00 && b[1] == 0x00 && b[2] == 0xFE && b[3] == 0xFF)
             {
-                text = provideText ? Encoding.GetEncoding("utf-32BE").GetString(b, 4, b.Length - 4) : null;
-                return Encoding.GetEncoding("utf-32BE");
-            } // UTF-32, big-endian 
+                // UTF-32, big-endian
+                text = provideText ? AdditionalEncoding.UTF_32BE.GetString(b, 4, b.Length - 4) : null;
+                return AdditionalEncoding.UTF_32BE;
+            }  
 
             if (b.Length >= 4 && b[0] == 0xFF && b[1] == 0xFE && b[2] == 0x00 && b[3] == 0x00)
             {
                 text = provideText ? Encoding.UTF32.GetString(b, 4, b.Length - 4) : null;
                 return Encoding.UTF32;
-            } // UTF-32, little-endian
+            }
 
             if (b.Length >= 2 && b[0] == 0xFE && b[1] == 0xFF)
             {
                 text = provideText ? Encoding.BigEndianUnicode.GetString(b, 2, b.Length - 2) : null;
                 return Encoding.BigEndianUnicode;
-            } // UTF-16, big-endian
+            }
 
             if (b.Length >= 2 && b[0] == 0xFF && b[1] == 0xFE)
             {
                 text = provideText ? Encoding.Unicode.GetString(b, 2, b.Length - 2) : null;
                 return Encoding.Unicode;
-            } // UTF-16, little-endian
+            }
 
             if (b.Length >= 3 && b[0] == 0xEF && b[1] == 0xBB && b[2] == 0xBF)
             {
                 text = provideText ? Encoding.UTF8.GetString(b, 3, b.Length - 3) : null;
                 return Encoding.UTF8;
-            } // UTF-8
+            }
 
             if (b.Length >= 3 && b[0] == 0x2b && b[1] == 0x2f && b[2] == 0x76)
             {
                 text = provideText ? Encoding.UTF7.GetString(b, 3, b.Length - 3) : null;
                 return Encoding.UTF7;
-            } // UTF-7
+            } 
 
 
             // If the code reaches here, no BOM/signature was found, so now
@@ -235,9 +212,10 @@ namespace MagicFileEncoding
                     count++;
             if ((double) count / taster > threshold)
             {
+                // unicode little-endian
                 text = provideText ? Encoding.Unicode.GetString(b) : null;
                 return Encoding.Unicode;
-            } // (little-endian)
+            } 
 
 
             // Finally, a long shot - let's see if we can find "charset=xyz" or
@@ -272,8 +250,9 @@ namespace MagicFileEncoding
                     }
                     catch
                     {
+                        // ... doesn't recognize the name of the encoding, break.
                         break;
-                    } // If C# doesn't recognize the name of the encoding, break.
+                    } 
                 }
 
 
@@ -287,7 +266,7 @@ namespace MagicFileEncoding
         }
         
         /// <summary>
-        /// 
+        /// Get the encoding by byte order mark
         /// </summary>
         public Encoding GetEncodingByBom(string filename)
         {
@@ -295,7 +274,7 @@ namespace MagicFileEncoding
         }
 
         /// <summary>
-        /// 
+        /// Get the encoding by byte order mark
         /// </summary>
         public Encoding GetEncodingByBom(string filename, Encoding defaultEncoding)
         {
@@ -304,7 +283,7 @@ namespace MagicFileEncoding
         }
         
         /// <summary>
-        /// 
+        /// Get the encoding by byte order mark
         /// </summary>
         public Encoding GetEncodingByBom(FileStream fileStream, Encoding defaultEncoding)
         {
@@ -320,7 +299,7 @@ namespace MagicFileEncoding
             if (bom[0] == 0xff && bom[1] == 0xfe) return Encoding.Unicode; //UTF-16LE
             if (bom[0] == 0xfe && bom[1] == 0xff) return Encoding.BigEndianUnicode; //UTF-16BE
             if (bom[0] == 0 && bom[1] == 0 && bom[2] == 0xfe && bom[3] == 0xff)
-                return new UTF32Encoding(true, true); //UTF-32BE
+                return AdditionalEncoding.UTF_32BE; //UTF-32BE
 
             // We actually have no idea what the encoding is if we reach this point, so return default
             return defaultEncoding;
