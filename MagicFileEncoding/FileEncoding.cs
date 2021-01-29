@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 
 namespace MagicFileEncoding
@@ -292,20 +290,53 @@ namespace MagicFileEncoding
             fileStream.Position = 0;
             fileStream.Read(bom, 0, 4);
 
-            return GetEncodingByBom(defaultEncoding, bom);
+            return GetEncodingByBom(defaultEncoding, bom, defaultEncoding, out _,false);
         }
 
-        private static Encoding GetEncodingByBom(Encoding defaultEncoding, byte[] bom)
+        private static Encoding GetEncodingByBom(Encoding defaultEncoding, byte[] b, Encoding fallback, out string text, bool provideText)
         {
-            // Analyze the BOM
-            if (bom[0] == 0x2b && bom[1] == 0x2f && bom[2] == 0x76) return Encoding.UTF7;
-            if (bom[0] == 0xef && bom[1] == 0xbb && bom[2] == 0xbf) return Encoding.UTF8;
-            if (bom[0] == 0xff && bom[1] == 0xfe && bom[2] == 0 && bom[3] == 0) return Encoding.UTF32; //UTF-32LE
-            if (bom[0] == 0xff && bom[1] == 0xfe) return Encoding.Unicode; //UTF-16LE
-            if (bom[0] == 0xfe && bom[1] == 0xff) return Encoding.BigEndianUnicode; //UTF-16BE
-            if (bom[0] == 0 && bom[1] == 0 && bom[2] == 0xfe && bom[3] == 0xff)
-                return AdditionalEncoding.UTF_32BE; //UTF-32BE
 
+            // BOM/signature exists (sourced from http://www.unicode.org/faq/utf_bom.html#bom4)
+            if (b.Length >= 4 && b[0] == 0x00 && b[1] == 0x00 && b[2] == 0xFE && b[3] == 0xFF)
+            {
+                // UTF-32, big-endian
+                text = provideText ? AdditionalEncoding.UTF_32BE.GetString(b, 4, b.Length - 4) : null;
+                return AdditionalEncoding.UTF_32BE;
+            }  
+
+            if (b.Length >= 4 && b[0] == 0xFF && b[1] == 0xFE && b[2] == 0x00 && b[3] == 0x00)
+            {
+                text = provideText ? Encoding.UTF32.GetString(b, 4, b.Length - 4) : null;
+                return Encoding.UTF32;
+            }
+
+            if (b.Length >= 2 && b[0] == 0xFE && b[1] == 0xFF)
+            {
+                text = provideText ? Encoding.BigEndianUnicode.GetString(b, 2, b.Length - 2) : null;
+                return Encoding.BigEndianUnicode;
+            }
+
+            if (b.Length >= 2 && b[0] == 0xFF && b[1] == 0xFE)
+            {
+                text = provideText ? Encoding.Unicode.GetString(b, 2, b.Length - 2) : null;
+                return Encoding.Unicode;
+            }
+
+            if (b.Length >= 3 && b[0] == 0xEF && b[1] == 0xBB && b[2] == 0xBF)
+            {
+                text = provideText ? Encoding.UTF8.GetString(b, 3, b.Length - 3) : null;
+                return Encoding.UTF8;
+            }
+
+            if (b.Length >= 3 && b[0] == 0x2b && b[1] == 0x2f && b[2] == 0x76)
+            {
+                text = provideText ? Encoding.UTF7.GetString(b, 3, b.Length - 3) : null;
+                return Encoding.UTF7;
+            }
+
+            // TODO decode text or separate text logic
+            text = "";
+            
             // We actually have no idea what the encoding is if we reach this point, so return default
             return defaultEncoding;
         }
