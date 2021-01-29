@@ -285,13 +285,18 @@ namespace MagicFileEncoding
         /// <summary>
         /// Get the encoding by byte order mark
         /// </summary>
-        public Encoding GetEncodingByBom(FileStream fileStream, Encoding defaultEncoding)
+        public static Encoding GetEncodingByBom(FileStream fileStream, Encoding defaultEncoding)
         {
             // Read the BOM
             var bom = new byte[4];
             fileStream.Position = 0;
             fileStream.Read(bom, 0, 4);
 
+            return GetEncodingByBom(defaultEncoding, bom);
+        }
+
+        private static Encoding GetEncodingByBom(Encoding defaultEncoding, byte[] bom)
+        {
             // Analyze the BOM
             if (bom[0] == 0x2b && bom[1] == 0x2f && bom[2] == 0x76) return Encoding.UTF7;
             if (bom[0] == 0xef && bom[1] == 0xbb && bom[2] == 0xbf) return Encoding.UTF8;
