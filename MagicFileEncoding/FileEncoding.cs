@@ -85,8 +85,7 @@ namespace MagicFileEncoding
             var encodingByBom = GetEncodingByBom(b, null, out text, provideText);
             if (encodingByBom != null)
                 return encodingByBom;
-
-
+            
             // If the code reaches here, no BOM/signature was found, so now
             // we need to 'taste' the file to see if can manually discover
             // the encoding. A high taster value is desired for UTF-8
@@ -169,6 +168,7 @@ namespace MagicFileEncoding
             for (var n = 1; n < taster; n += 2)
                 if (b[n] == 0)
                     count++;
+            
             if ((double) count / taster > threshold)
             {
                 // unicode little-endian
@@ -176,43 +176,8 @@ namespace MagicFileEncoding
                 return Encoding.Unicode;
             } 
             
-            // Finally, a long shot - let's see if we can find "charset=xyz" or
-            // "encoding=xyz" to identify the encoding:
-            for (var n = 0; n < taster - 9; n++)
-                if (
-                    (b[n + 0] == 'c' || b[n + 0] == 'C') && (b[n + 1] == 'h' || b[n + 1] == 'H') &&
-                    (b[n + 2] == 'a' || b[n + 2] == 'A') && (b[n + 3] == 'r' || b[n + 3] == 'R') &&
-                    (b[n + 4] == 's' || b[n + 4] == 'S') && (b[n + 5] == 'e' || b[n + 5] == 'E') &&
-                    (b[n + 6] == 't' || b[n + 6] == 'T') && b[n + 7] == '=' ||
-                    (b[n + 0] == 'e' || b[n + 0] == 'E') && (b[n + 1] == 'n' || b[n + 1] == 'N') &&
-                    (b[n + 2] == 'c' || b[n + 2] == 'C') && (b[n + 3] == 'o' || b[n + 3] == 'O') &&
-                    (b[n + 4] == 'd' || b[n + 4] == 'D') && (b[n + 5] == 'i' || b[n + 5] == 'I') &&
-                    (b[n + 6] == 'n' || b[n + 6] == 'N') && (b[n + 7] == 'g' || b[n + 7] == 'G') && b[n + 8] == '='
-                )
-                {
-                    if (b[n + 0] == 'c' || b[n + 0] == 'C') n += 8;
-                    else n += 9;
-                    if (b[n] == '"' || b[n] == '\'') n++;
-                    var oldn = n;
-                    while (n < taster && (b[n] == '_' || b[n] == '-' || b[n] >= '0' && b[n] <= '9' ||
-                                          b[n] >= 'a' && b[n] <= 'z' || b[n] >= 'A' && b[n] <= 'Z'))
-                        n++;
-
-                    var nb = new byte[n - oldn];
-                    Array.Copy(b, oldn, nb, 0, n - oldn);
-                    try
-                    {
-                        var internalEnc = Encoding.ASCII.GetString(nb);
-                        text = provideText ? Encoding.GetEncoding(internalEnc).GetString(b) : null;
-                        return Encoding.GetEncoding(internalEnc);
-                    }
-                    catch
-                    {
-                        // ... doesn't recognize the name of the encoding, break.
-                        break;
-                    } 
-                }
-
+            if (Longshot(ref text, provideText, taster, b, out var encoding))
+                return encoding;
 
             // If all else fails, the encoding is probably (though certainly not
             // definitely) the user's local codepage! One might present to the user a
@@ -222,7 +187,58 @@ namespace MagicFileEncoding
             text = provideText ? FallbackEncoding.GetString(b) : null;
             return FallbackEncoding;
         }
-        
+
+        /// <summary>
+        /// A long shot - let's see if we can find "charset=xyz" or
+        /// "encoding=xyz" to identify the encoding:
+        /// </summary>
+        private static bool Longshot(ref string text, bool provideText, int taster, byte[] b, out Encoding encoding)
+        {
+            for (var n = 0; n < taster - 9; n++)
+            {
+                if (((b[n + 0] != 'c' && b[n + 0] != 'C') || (b[n + 1] != 'h' && b[n + 1] != 'H') ||
+                     (b[n + 2] != 'a' && b[n + 2] != 'A') || (b[n + 3] != 'r' && b[n + 3] != 'R') ||
+                     (b[n + 4] != 's' && b[n + 4] != 'S') || (b[n + 5] != 'e' && b[n + 5] != 'E') ||
+                     (b[n + 6] != 't' && b[n + 6] != 'T') || b[n + 7] != '=') &&
+                    ((b[n + 0] != 'e' && b[n + 0] != 'E') || (b[n + 1] != 'n' && b[n + 1] != 'N') ||
+                     (b[n + 2] != 'c' && b[n + 2] != 'C') || (b[n + 3] != 'o' && b[n + 3] != 'O') ||
+                     (b[n + 4] != 'd' && b[n + 4] != 'D') || (b[n + 5] != 'i' && b[n + 5] != 'I') ||
+                     (b[n + 6] != 'n' && b[n + 6] != 'N') || (b[n + 7] != 'g' && b[n + 7] != 'G') ||
+                     b[n + 8] != '=')) continue;
+
+                if (b[n + 0] == 'c' || b[n + 0] == 'C') n += 8;
+                else n += 9;
+
+                if (b[n] == '"' || b[n] == '\'') n++;
+
+                var oldn = n;
+
+                while (n < taster && (b[n] == '_' || b[n] == '-' || b[n] >= '0' && b[n] <= '9' ||
+                                      b[n] >= 'a' && b[n] <= 'z' || b[n] >= 'A' && b[n] <= 'Z'))
+                    n++;
+
+                var nb = new byte[n - oldn];
+                Array.Copy(b, oldn, nb, 0, n - oldn);
+                try
+                {
+                    var internalEnc = Encoding.ASCII.GetString(nb);
+                    text = provideText ? Encoding.GetEncoding(internalEnc).GetString(b) : null;
+                    {
+                        encoding = Encoding.GetEncoding(internalEnc);
+                        return true;
+                    }
+                }
+                catch
+                {
+                    // ... doesn't recognize the name of the encoding, break.
+                    break;
+                }
+            }
+
+            encoding = null;
+            return false;
+        }
+
         /// <summary>
         /// Get the encoding by byte order mark
         /// </summary>
