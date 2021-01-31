@@ -18,11 +18,7 @@ namespace MagicFileEncoding
         /// </summary>
         public Encoding GetAcceptableEncoding(string filename)
         {
-            var encoding = GetEncodingByBom(filename, null);
-            if (encoding != null)
-                return encoding;
-            
-            encoding = DetectTextEncoding(filename, out _, false);
+            var encoding = DetectTextEncoding(filename, out _, false);
 
             // We have no idea what this is so we use the fallback encoding
             return encoding ?? FallbackEncoding;
@@ -86,44 +82,9 @@ namespace MagicFileEncoding
         {
             var b = File.ReadAllBytes(filename);
 
-            // First check the low hanging fruit by checking if a
-            // BOM/signature exists (sourced from http://www.unicode.org/faq/utf_bom.html#bom4)
-            if (b.Length >= 4 && b[0] == 0x00 && b[1] == 0x00 && b[2] == 0xFE && b[3] == 0xFF)
-            {
-                // UTF-32, big-endian
-                text = provideText ? AdditionalEncoding.UTF_32BE.GetString(b, 4, b.Length - 4) : null;
-                return AdditionalEncoding.UTF_32BE;
-            }  
-
-            if (b.Length >= 4 && b[0] == 0xFF && b[1] == 0xFE && b[2] == 0x00 && b[3] == 0x00)
-            {
-                text = provideText ? Encoding.UTF32.GetString(b, 4, b.Length - 4) : null;
-                return Encoding.UTF32;
-            }
-
-            if (b.Length >= 2 && b[0] == 0xFE && b[1] == 0xFF)
-            {
-                text = provideText ? Encoding.BigEndianUnicode.GetString(b, 2, b.Length - 2) : null;
-                return Encoding.BigEndianUnicode;
-            }
-
-            if (b.Length >= 2 && b[0] == 0xFF && b[1] == 0xFE)
-            {
-                text = provideText ? Encoding.Unicode.GetString(b, 2, b.Length - 2) : null;
-                return Encoding.Unicode;
-            }
-
-            if (b.Length >= 3 && b[0] == 0xEF && b[1] == 0xBB && b[2] == 0xBF)
-            {
-                text = provideText ? Encoding.UTF8.GetString(b, 3, b.Length - 3) : null;
-                return Encoding.UTF8;
-            }
-
-            if (b.Length >= 3 && b[0] == 0x2b && b[1] == 0x2f && b[2] == 0x76)
-            {
-                text = provideText ? Encoding.UTF7.GetString(b, 3, b.Length - 3) : null;
-                return Encoding.UTF7;
-            } 
+            var encodingByBom = GetEncodingByBom(b, null, out text, provideText);
+            if (encodingByBom != null)
+                return encodingByBom;
 
 
             // If the code reaches here, no BOM/signature was found, so now
@@ -214,8 +175,7 @@ namespace MagicFileEncoding
                 text = provideText ? Encoding.Unicode.GetString(b) : null;
                 return Encoding.Unicode;
             } 
-
-
+            
             // Finally, a long shot - let's see if we can find "charset=xyz" or
             // "encoding=xyz" to identify the encoding:
             for (var n = 0; n < taster - 9; n++)
@@ -290,10 +250,11 @@ namespace MagicFileEncoding
             fileStream.Position = 0;
             fileStream.Read(bom, 0, 4);
 
-            return GetEncodingByBom(defaultEncoding, bom, defaultEncoding, out _,false);
+            return GetEncodingByBom( bom, defaultEncoding, out _,false);
         }
 
-        private static Encoding GetEncodingByBom(Encoding defaultEncoding, byte[] b, Encoding fallback, out string text, bool provideText)
+        private static Encoding GetEncodingByBom(byte[] b, Encoding fallback, out string text,
+            bool provideText)
         {
 
             // BOM/signature exists (sourced from http://www.unicode.org/faq/utf_bom.html#bom4)
@@ -333,12 +294,11 @@ namespace MagicFileEncoding
                 text = provideText ? Encoding.UTF7.GetString(b, 3, b.Length - 3) : null;
                 return Encoding.UTF7;
             }
-
-            // TODO decode text or separate text logic
-            text = "";
+            
+            text = provideText ? fallback?.GetString(b) : null;
             
             // We actually have no idea what the encoding is if we reach this point, so return default
-            return defaultEncoding;
+            return fallback;
         }
 
         /// <summary>
