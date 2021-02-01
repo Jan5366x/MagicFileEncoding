@@ -4,6 +4,7 @@ using System.Text;
 
 namespace MagicFileEncoding
 {
+    
     public class FileEncoding
     {
         /// <summary>
@@ -14,7 +15,6 @@ namespace MagicFileEncoding
         
         /// <summary>
         /// Find a acceptable encoding to open a given file
-        /// https://stackoverflow.com/questions/3825390/effective-way-to-find-any-files-encoding
         /// </summary>
         public Encoding GetAcceptableEncoding(string filename)
         {
@@ -69,9 +69,8 @@ namespace MagicFileEncoding
         }
 
         /// <summary>
-        /// https://stackoverflow.com/questions/1025332/determine-a-strings-encoding-in-c-sharp
         /// Function to detect the encoding for UTF-7, UTF-8/16/32 (bom, no bom, little
-        /// & big endian), and local default codepage, and potentially other codepages.
+        /// and big endian), and local default codepage, and potentially other codepages.
         /// 'taster' = number of bytes to check of the file (to save processing). Higher
         /// value is slower, but more reliable (especially UTF-8 with special characters
         /// later on may appear to be ASCII initially). If taster = 0, then taster
@@ -94,10 +93,7 @@ namespace MagicFileEncoding
 
 
             // Some text files are encoded in UTF8, but have no BOM/signature. Hence
-            // the below manually checks for a UTF8 pattern. This code is based off
-            // the top answer at: https://stackoverflow.com/questions/6555015/check-for-invalid-utf8
-            // For our purposes, an unnecessarily strict (and terser/slower)
-            // implementation is shown at: https://stackoverflow.com/questions/1031645/how-to-detect-utf-8-in-plain-c
+            // the below manually checks for a UTF8 pattern.
             // For the below, false positives should be exceedingly rare (and would
             // be either slightly malformed UTF-8 (which would suit our purposes
             // anyway) or 8-bit extended ASCII/UTF-16/32 at a vanishingly long shot).
@@ -178,12 +174,8 @@ namespace MagicFileEncoding
             
             if (Longshot(ref text, provideText, taster, b, out var encoding))
                 return encoding;
-
-            // If all else fails, the encoding is probably (though certainly not
-            // definitely) the user's local codepage! One might present to the user a
-            // list of alternative encodings as shown here:
-            // https://stackoverflow.com/questions/8509339/what-is-the-most-common-encoding-of-each-language
-            // A full list can be found using Encoding.GetEncodings();
+            
+            // use the fallback encoding
             text = provideText ? FallbackEncoding.GetString(b) : null;
             return FallbackEncoding;
         }
@@ -257,7 +249,7 @@ namespace MagicFileEncoding
         }
         
         /// <summary>
-        /// Get the encoding by byte order mark
+        /// Try to get the encoding by byte order mark
         /// </summary>
         public static Encoding GetEncodingByBom(FileStream fileStream, Encoding defaultEncoding)
         {
@@ -269,11 +261,14 @@ namespace MagicFileEncoding
             return GetEncodingByBom( bom, defaultEncoding, out _,false);
         }
 
+        /// <summary>
+        /// Try to get the encoding by byte order mark and provide text if available and needed
+        /// </summary>
         private static Encoding GetEncodingByBom(byte[] b, Encoding fallback, out string text,
             bool provideText)
         {
 
-            // BOM/signature exists (sourced from http://www.unicode.org/faq/utf_bom.html#bom4)
+            // BOM signature exists
             if (b.Length >= 4 && b[0] == 0x00 && b[1] == 0x00 && b[2] == 0xFE && b[3] == 0xFF)
             {
                 // UTF-32, big-endian
@@ -315,29 +310,6 @@ namespace MagicFileEncoding
             
             // We actually have no idea what the encoding is if we reach this point, so return default
             return fallback;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public Encoding GetEncodingByParsing(string filename, Encoding encoding)
-        {
-            var encodingVerifier = Encoding.GetEncoding(encoding.BodyName, new EncoderExceptionFallback(),
-                new DecoderExceptionFallback());
-            try
-            {
-                using var textReader =
-                    new StreamReader(filename, encodingVerifier, true);
-                while (!textReader.EndOfStream)
-                    textReader.ReadLine(); // in order to increment the stream position
-
-                // all text parsed ok
-                return textReader.CurrentEncoding;
-            }
-            catch (Exception)
-            {
-                return null;
-            }
         }
     }
 }
