@@ -46,7 +46,7 @@ namespace MagicFileEncoding
         /// a given target encoding
         /// </summary>
         /// <param name="filename">The file to read text</param>
-        /// <param name="targetEncoding"></param>
+        /// <param name="targetEncoding">The target encoding to transform to the return value</param>
         /// <returns></returns>
         public static string ReadAllText(string filename, Encoding targetEncoding)
         { 
@@ -58,9 +58,9 @@ namespace MagicFileEncoding
         /// <summary>
         /// Write all text to a given file in a specific encoding
         /// </summary>
-        /// <param name="path"></param>
-        /// <param name="text"></param>
-        /// <param name="targetEncoding"></param>
+        /// <param name="path">The path to the text file</param>
+        /// <param name="text">Text to encode and write to file</param>
+        /// <param name="targetEncoding">Target encoding</param>
         public static void WriteAllText(string path, string text, Encoding targetEncoding)
         {
             File.WriteAllText(path, text, targetEncoding);
@@ -69,7 +69,7 @@ namespace MagicFileEncoding
         /// <summary>
         /// Automatic transform bytes
         /// </summary>
-        /// <param name="filename"></param>
+        /// <param name="filename">The file to analyze</param>
         /// <param name="targetEncoding"></param>
         /// <returns></returns>
         private static byte[] AutomaticTransformBytes(string filename, Encoding targetEncoding)
@@ -87,7 +87,7 @@ namespace MagicFileEncoding
         /// becomes the length of the file (for maximum reliability). 'text' is simply
         /// the string with the discovered encoding applied to the file.
         /// </summary>
-        /// <param name="filename"></param>
+        /// <param name="filename">The file to analyze</param>
         /// <param name="text"></param>
         /// <param name="provideText"></param>
         /// <param name="taster"></param>
@@ -256,7 +256,7 @@ namespace MagicFileEncoding
         /// <summary>
         /// Get the encoding by byte order mark
         /// </summary>
-        /// <param name="filename"></param>
+        /// <param name="filename">The file to analyze</param>
         /// <param name="fallbackEncoding"></param>
         /// <returns></returns>
         private static Encoding GetEncodingByBom(string filename, Encoding fallbackEncoding = null)
@@ -268,7 +268,7 @@ namespace MagicFileEncoding
         /// <summary>
         /// Try to get the encoding by byte order mark
         /// </summary>
-        /// <param name="fileStream"></param>
+        /// <param name="fileStream">The file stream to read bytes from</param>
         /// <param name="defaultEncoding"></param>
         /// <returns></returns>
         private static Encoding GetEncodingByBom(FileStream fileStream, Encoding defaultEncoding)
@@ -284,54 +284,54 @@ namespace MagicFileEncoding
         /// <summary>
         /// Try to get the encoding by byte order mark and provide text if available and needed
         /// </summary>
-        /// <param name="b"></param>
-        /// <param name="fallback"></param>
-        /// <param name="text"></param>
-        /// <param name="provideText"></param>
-        /// <returns></returns>
-        private static Encoding GetEncodingByBom(byte[] b, Encoding fallback, out string text,
+        /// <param name="bytes">File byte array</param>
+        /// <param name="fallback">Fallback encoding</param>
+        /// <param name="text">Text output if text should be provided</param>
+        /// <param name="provideText">Boolean value to indicate if text sould be provided</param>
+        /// <returns>Encoding by bom or fallback</returns>
+        private static Encoding GetEncodingByBom(byte[] bytes, Encoding fallback, out string text,
             bool provideText)
         {
 
             // BOM signature exists
-            if (b.Length >= 4 && b[0] == 0x00 && b[1] == 0x00 && b[2] == 0xFE && b[3] == 0xFF)
+            if (bytes.Length >= 4 && bytes[0] == 0x00 && bytes[1] == 0x00 && bytes[2] == 0xFE && bytes[3] == 0xFF)
             {
                 // UTF-32, big-endian
-                text = provideText ? AdditionalEncoding.UTF_32BE.GetString(b, 4, b.Length - 4) : null;
+                text = provideText ? AdditionalEncoding.UTF_32BE.GetString(bytes, 4, bytes.Length - 4) : null;
                 return AdditionalEncoding.UTF_32BE;
             }  
 
-            if (b.Length >= 4 && b[0] == 0xFF && b[1] == 0xFE && b[2] == 0x00 && b[3] == 0x00)
+            if (bytes.Length >= 4 && bytes[0] == 0xFF && bytes[1] == 0xFE && bytes[2] == 0x00 && bytes[3] == 0x00)
             {
-                text = provideText ? Encoding.UTF32.GetString(b, 4, b.Length - 4) : null;
+                text = provideText ? Encoding.UTF32.GetString(bytes, 4, bytes.Length - 4) : null;
                 return Encoding.UTF32;
             }
 
-            if (b.Length >= 2 && b[0] == 0xFE && b[1] == 0xFF)
+            if (bytes.Length >= 2 && bytes[0] == 0xFE && bytes[1] == 0xFF)
             {
-                text = provideText ? Encoding.BigEndianUnicode.GetString(b, 2, b.Length - 2) : null;
+                text = provideText ? Encoding.BigEndianUnicode.GetString(bytes, 2, bytes.Length - 2) : null;
                 return Encoding.BigEndianUnicode;
             }
 
-            if (b.Length >= 2 && b[0] == 0xFF && b[1] == 0xFE)
+            if (bytes.Length >= 2 && bytes[0] == 0xFF && bytes[1] == 0xFE)
             {
-                text = provideText ? Encoding.Unicode.GetString(b, 2, b.Length - 2) : null;
+                text = provideText ? Encoding.Unicode.GetString(bytes, 2, bytes.Length - 2) : null;
                 return Encoding.Unicode;
             }
 
-            if (b.Length >= 3 && b[0] == 0xEF && b[1] == 0xBB && b[2] == 0xBF)
+            if (bytes.Length >= 3 && bytes[0] == 0xEF && bytes[1] == 0xBB && bytes[2] == 0xBF)
             {
-                text = provideText ? Encoding.UTF8.GetString(b, 3, b.Length - 3) : null;
+                text = provideText ? Encoding.UTF8.GetString(bytes, 3, bytes.Length - 3) : null;
                 return Encoding.UTF8;
             }
 
-            if (b.Length >= 3 && b[0] == 0x2b && b[1] == 0x2f && b[2] == 0x76)
+            if (bytes.Length >= 3 && bytes[0] == 0x2b && bytes[1] == 0x2f && bytes[2] == 0x76)
             {
-                text = provideText ? Encoding.UTF7.GetString(b, 3, b.Length - 3) : null;
+                text = provideText ? Encoding.UTF7.GetString(bytes, 3, bytes.Length - 3) : null;
                 return Encoding.UTF7;
             }
             
-            text = provideText ? fallback?.GetString(b) : null;
+            text = provideText ? fallback?.GetString(bytes) : null;
             
             // We actually have no idea what the encoding is if we reach this point, so return default
             return fallback;
