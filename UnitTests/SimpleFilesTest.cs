@@ -10,14 +10,6 @@ namespace UnitTests
     [TestFixture]
     public class SimpleFilesTest
     {
-        private FileEncoding _mfe;
-        
-        [SetUp]
-        public void Setup()
-        {
-            _mfe = new FileEncoding();
-        }
-        
         [TestCase("/TestFiles/SimpleFiles/A_ANSI.txt")]
         [TestCase("/TestFiles/SimpleFiles/A_UTF-8.txt")]
         [TestCase("/TestFiles/SimpleFiles/A_UTF-8-BOM.txt")]
@@ -30,7 +22,7 @@ namespace UnitTests
             var filePath = TestContext.CurrentContext.WorkDirectory + subFilePath
                 .Replace('/', Path.DirectorySeparatorChar);
             
-            Assert.AreEqual("Kleiner Test äöüÄÖÜ?ß", _mfe.AutomaticReadAllText(filePath, Encoding.Unicode));
+            Assert.AreEqual("Kleiner Test äöüÄÖÜ?ß", FileEncoding.AutomaticReadAllText(filePath, Encoding.Unicode));
         }
 
         [TestCase("/TestFiles/SimpleFiles/A_ANSI.txt")]
@@ -47,9 +39,9 @@ namespace UnitTests
 
             using var tmpFile = new TempFile();
             
-            var text = _mfe.AutomaticReadAllText(filePath, Encoding.Unicode);
+            var text = FileEncoding.AutomaticReadAllText(filePath, Encoding.Unicode);
             
-            _mfe.WriteAllText(tmpFile.Path, text, Encoding.UTF8);
+            FileEncoding.WriteAllText(tmpFile.Path, text, Encoding.UTF8);
             
             var expectedResultPath = TestContext.CurrentContext.WorkDirectory + "/TestFiles/SimpleFiles/A_UTF-8-BOM.txt"
                 .Replace('/', Path.DirectorySeparatorChar);
@@ -71,9 +63,9 @@ namespace UnitTests
 
             using var tmpFile = new TempFile();
             
-            var text = _mfe.AutomaticReadAllText(filePath, Encoding.UTF8);
+            var text = FileEncoding.AutomaticReadAllText(filePath, Encoding.UTF8);
             
-            _mfe.WriteAllText(tmpFile.Path, text, Encoding.UTF8);
+            FileEncoding.WriteAllText(tmpFile.Path, text, Encoding.UTF8);
             
             var expectedResultPath = TestContext.CurrentContext.WorkDirectory + "/TestFiles/SimpleFiles/A_UTF-8-BOM.txt"
                 .Replace('/', Path.DirectorySeparatorChar);
@@ -95,9 +87,9 @@ namespace UnitTests
 
             using var tmpFile = new TempFile();
             
-            var text = _mfe.AutomaticReadAllText(filePath, Encoding.Unicode);
+            var text = FileEncoding.AutomaticReadAllText(filePath, Encoding.Unicode);
             
-            _mfe.WriteAllText(tmpFile.Path, text, AdditionalEncoding.ISO_8859_1);
+            FileEncoding.WriteAllText(tmpFile.Path, text, AdditionalEncoding.ISO_8859_1);
             
             var expectedResultPath = TestContext.CurrentContext.WorkDirectory + "/TestFiles/SimpleFiles/A_ISO-8859-1.txt"
                 .Replace('/', Path.DirectorySeparatorChar);
