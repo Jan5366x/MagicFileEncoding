@@ -12,16 +12,16 @@ namespace MagicFileEncoding
     {
         /// <summary>
         /// The fallback encoding<br />
-        /// <i>ISO-8859-1 (Latin-1)by default</i>
+        /// <i>ISO-8859-1 (Latin-1) by default</i>
         /// </summary>
         private static readonly Encoding DefaultFallback = AdditionalEncoding.ISO_8859_1;
         
         /// <summary>
         /// Find a acceptable encoding to open a given file
         /// </summary>
-        /// <param name="filename"></param>
-        /// <param name="fallbackEncoding"></param>
-        /// <returns></returns>
+        /// <param name="filename">The file to check</param>
+        /// <param name="fallbackEncoding">The fallback encoding (ISO-8859-1 by default)</param>
+        /// <returns>Best suitable encoding</returns>
         public static Encoding GetAcceptableEncoding(string filename, Encoding fallbackEncoding = null)
         {
             var encoding = DetectTextEncoding(filename, out _, false);
@@ -31,9 +31,10 @@ namespace MagicFileEncoding
         }
 
         /// <summary>
-        /// target encoding is Unicode UTF16
+        /// Automatic detect acceptable encoding and read all text from a given file and transform it into
+        /// Unicode UTF16 encoding
         /// </summary>
-        /// <param name="filename"></param>
+        /// <param name="filename">The file to read text</param>
         /// <returns></returns>
         public static string ReadAllText(string filename)
         {
@@ -41,9 +42,10 @@ namespace MagicFileEncoding
         }
         
         /// <summary>
-        /// Automatic detect acceptable encoding and read all text from a given file
+        /// Automatic detect acceptable encoding and read all text from a given file and transform it into
+        /// a given target encoding
         /// </summary>
-        /// <param name="filename"></param>
+        /// <param name="filename">The file to read text</param>
         /// <param name="targetEncoding"></param>
         /// <returns></returns>
         public static string ReadAllText(string filename, Encoding targetEncoding)
@@ -65,7 +67,7 @@ namespace MagicFileEncoding
         }
 
         /// <summary>
-        /// Automatic Transform Bytes
+        /// Automatic transform bytes
         /// </summary>
         /// <param name="filename"></param>
         /// <param name="targetEncoding"></param>
