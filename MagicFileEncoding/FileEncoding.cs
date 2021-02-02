@@ -5,13 +5,13 @@ using System.Text;
 namespace MagicFileEncoding
 {
     
-    public class FileEncoding
+    public static class FileEncoding
     {
         /// <summary>
         /// The fallback encoding<br />
         /// <i>ISO-8859-1 (Latin-1)by default</i>
         /// </summary>
-        private static readonly Encoding defaultFallback= AdditionalEncoding.ISO_8859_1;
+        private static readonly Encoding DefaultFallback = AdditionalEncoding.ISO_8859_1;
         
         /// <summary>
         /// Find a acceptable encoding to open a given file
@@ -21,7 +21,7 @@ namespace MagicFileEncoding
             var encoding = DetectTextEncoding(filename, out _, false);
 
             // We have no idea what this is so we use the fallback encoding
-            return encoding ?? fallbackEncoding ?? defaultFallback;
+            return encoding ?? fallbackEncoding ?? DefaultFallback;
         }
 
         /// <summary>
@@ -177,8 +177,8 @@ namespace MagicFileEncoding
                 return encoding;
             
             // use the fallback encoding
-            text = provideText ? (fallbackEncoding ?? defaultFallback).GetString(b) : null;
-            return fallbackEncoding ?? defaultFallback;
+            text = provideText ? (fallbackEncoding ?? DefaultFallback).GetString(b) : null;
+            return fallbackEncoding ?? DefaultFallback;
         }
 
         /// <summary>
@@ -238,7 +238,7 @@ namespace MagicFileEncoding
         public static Encoding GetEncodingByBom(string filename, Encoding fallbackEncoding = null)
         {
             using var file = new FileStream(filename, FileMode.Open, FileAccess.Read);
-            return GetEncodingByBom(file, fallbackEncoding ?? defaultFallback);
+            return GetEncodingByBom(file, fallbackEncoding ?? DefaultFallback);
         }
         
         /// <summary>
