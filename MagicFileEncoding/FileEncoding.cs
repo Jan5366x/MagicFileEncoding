@@ -5,6 +5,9 @@ using System.Text;
 namespace MagicFileEncoding
 {
     
+    /// <summary>
+    /// Magic File Encoding Static Class
+    /// </summary>
     public static class FileEncoding
     {
         /// <summary>
@@ -16,6 +19,9 @@ namespace MagicFileEncoding
         /// <summary>
         /// Find a acceptable encoding to open a given file
         /// </summary>
+        /// <param name="filename"></param>
+        /// <param name="fallbackEncoding"></param>
+        /// <returns></returns>
         public static Encoding GetAcceptableEncoding(string filename, Encoding fallbackEncoding = null)
         {
             var encoding = DetectTextEncoding(filename, out _, false);
@@ -27,6 +33,8 @@ namespace MagicFileEncoding
         /// <summary>
         /// target encoding is Unicode UTF16
         /// </summary>
+        /// <param name="filename"></param>
+        /// <returns></returns>
         public static string ReadAllText(string filename)
         {
             return Encoding.Unicode.GetString(AutomaticTransformBytes(filename, Encoding.Unicode));
@@ -35,6 +43,9 @@ namespace MagicFileEncoding
         /// <summary>
         /// Automatic detect acceptable encoding and read all text from a given file
         /// </summary>
+        /// <param name="filename"></param>
+        /// <param name="targetEncoding"></param>
+        /// <returns></returns>
         public static string ReadAllText(string filename, Encoding targetEncoding)
         { 
             return targetEncoding
@@ -45,6 +56,9 @@ namespace MagicFileEncoding
         /// <summary>
         /// Write all text to a given file in a specific encoding
         /// </summary>
+        /// <param name="path"></param>
+        /// <param name="text"></param>
+        /// <param name="targetEncoding"></param>
         public static void WriteAllText(string path, string text, Encoding targetEncoding)
         {
             File.WriteAllText(path, text, targetEncoding);
@@ -53,6 +67,9 @@ namespace MagicFileEncoding
         /// <summary>
         /// Automatic Transform Bytes
         /// </summary>
+        /// <param name="filename"></param>
+        /// <param name="targetEncoding"></param>
+        /// <returns></returns>
         private static byte[] AutomaticTransformBytes(string filename, Encoding targetEncoding)
         { 
             return Encoding.Convert(GetAcceptableEncoding(filename), 
@@ -68,6 +85,12 @@ namespace MagicFileEncoding
         /// becomes the length of the file (for maximum reliability). 'text' is simply
         /// the string with the discovered encoding applied to the file.
         /// </summary>
+        /// <param name="filename"></param>
+        /// <param name="text"></param>
+        /// <param name="provideText"></param>
+        /// <param name="taster"></param>
+        /// <param name="fallbackEncoding"></param>
+        /// <returns></returns>
         private static Encoding DetectTextEncoding(string filename, out string text, bool provideText, int taster = 0,
             Encoding fallbackEncoding = null)
         {
@@ -163,7 +186,7 @@ namespace MagicFileEncoding
                 return Encoding.Unicode;
             } 
             
-            if (Longshot(ref text, provideText, taster, b, out var encoding))
+            if (LongShot(ref text, provideText, taster, b, out var encoding))
                 return encoding;
             
             // use the fallback encoding
@@ -175,7 +198,13 @@ namespace MagicFileEncoding
         /// A long shot - let's see if we can find "charset=xyz" or
         /// "encoding=xyz" to identify the encoding:
         /// </summary>
-        private static bool Longshot(ref string text, bool provideText, int taster, byte[] b, out Encoding encoding)
+        /// <param name="text"></param>
+        /// <param name="provideText"></param>
+        /// <param name="taster"></param>
+        /// <param name="b"></param>
+        /// <param name="encoding"></param>
+        /// <returns></returns>
+        private static bool LongShot(ref string text, bool provideText, int taster, byte[] b, out Encoding encoding)
         {
             for (var n = 0; n < taster - 9; n++)
             {
@@ -225,6 +254,9 @@ namespace MagicFileEncoding
         /// <summary>
         /// Get the encoding by byte order mark
         /// </summary>
+        /// <param name="filename"></param>
+        /// <param name="fallbackEncoding"></param>
+        /// <returns></returns>
         private static Encoding GetEncodingByBom(string filename, Encoding fallbackEncoding = null)
         {
             using var file = new FileStream(filename, FileMode.Open, FileAccess.Read);
@@ -234,6 +266,9 @@ namespace MagicFileEncoding
         /// <summary>
         /// Try to get the encoding by byte order mark
         /// </summary>
+        /// <param name="fileStream"></param>
+        /// <param name="defaultEncoding"></param>
+        /// <returns></returns>
         private static Encoding GetEncodingByBom(FileStream fileStream, Encoding defaultEncoding)
         {
             // Read the BOM
@@ -247,6 +282,11 @@ namespace MagicFileEncoding
         /// <summary>
         /// Try to get the encoding by byte order mark and provide text if available and needed
         /// </summary>
+        /// <param name="b"></param>
+        /// <param name="fallback"></param>
+        /// <param name="text"></param>
+        /// <param name="provideText"></param>
+        /// <returns></returns>
         private static Encoding GetEncodingByBom(byte[] b, Encoding fallback, out string text,
             bool provideText)
         {
