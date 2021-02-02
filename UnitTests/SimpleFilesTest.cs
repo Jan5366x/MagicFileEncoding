@@ -22,7 +22,7 @@ namespace UnitTests
             var filePath = TestContext.CurrentContext.WorkDirectory + subFilePath
                 .Replace('/', Path.DirectorySeparatorChar);
             
-            Assert.AreEqual("Kleiner Test äöüÄÖÜ?ß", FileEncoding.AutomaticReadAllText(filePath, Encoding.Unicode));
+            Assert.AreEqual("Kleiner Test äöüÄÖÜ?ß", FileEncoding.ReadAllText(filePath, Encoding.Unicode));
         }
 
         [TestCase("/TestFiles/SimpleFiles/A_ANSI.txt")]
@@ -39,7 +39,7 @@ namespace UnitTests
 
             using var tmpFile = new TempFile();
             
-            var text = FileEncoding.AutomaticReadAllText(filePath, Encoding.Unicode);
+            var text = FileEncoding.ReadAllText(filePath, Encoding.Unicode);
             
             FileEncoding.WriteAllText(tmpFile.Path, text, Encoding.UTF8);
             
@@ -63,7 +63,7 @@ namespace UnitTests
 
             using var tmpFile = new TempFile();
             
-            var text = FileEncoding.AutomaticReadAllText(filePath, Encoding.UTF8);
+            var text = FileEncoding.ReadAllText(filePath, Encoding.UTF8);
             
             FileEncoding.WriteAllText(tmpFile.Path, text, Encoding.UTF8);
             
@@ -87,7 +87,7 @@ namespace UnitTests
 
             using var tmpFile = new TempFile();
             
-            var text = FileEncoding.AutomaticReadAllText(filePath, Encoding.Unicode);
+            var text = FileEncoding.ReadAllText(filePath, Encoding.Unicode);
             
             FileEncoding.WriteAllText(tmpFile.Path, text, AdditionalEncoding.ISO_8859_1);
             

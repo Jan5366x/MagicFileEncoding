@@ -27,7 +27,7 @@ namespace MagicFileEncoding
         /// <summary>
         /// target encoding is Unicode UTF16
         /// </summary>
-        public static string AutomaticReadAllText(string filename)
+        public static string ReadAllText(string filename)
         {
             return Encoding.Unicode.GetString(AutomaticTransformBytes(filename, Encoding.Unicode));
         }
@@ -35,34 +35,25 @@ namespace MagicFileEncoding
         /// <summary>
         /// Automatic detect acceptable encoding and read all text from a given file
         /// </summary>
-        public static string AutomaticReadAllText(string filename, Encoding targetEncoding)
+        public static string ReadAllText(string filename, Encoding targetEncoding)
         { 
             return targetEncoding
                 .GetString(AutomaticTransformBytes(filename, targetEncoding))
                 .Trim(new[]{'\uFEFF'});
         }
-
-        /// <summary>
-        /// Write all text to a given file in the default encoding
-        /// </summary>
-        /// <see cref="Encoding.Default"/>
-        public static void WriteAllText(string path, string contents)
-        {
-            File.WriteAllText(path, contents, Encoding.Default);
-        }
         
         /// <summary>
         /// Write all text to a given file in a specific encoding
         /// </summary>
-        public static void WriteAllText(string path, string contents, Encoding targetEncoding)
+        public static void WriteAllText(string path, string text, Encoding targetEncoding)
         {
-            File.WriteAllText(path, contents, targetEncoding);
+            File.WriteAllText(path, text, targetEncoding);
         }
 
         /// <summary>
         /// Automatic Transform Bytes
         /// </summary>
-        public static byte[] AutomaticTransformBytes(string filename, Encoding targetEncoding)
+        private static byte[] AutomaticTransformBytes(string filename, Encoding targetEncoding)
         { 
             return Encoding.Convert(GetAcceptableEncoding(filename), 
                 targetEncoding, File.ReadAllBytes(filename));
@@ -77,7 +68,7 @@ namespace MagicFileEncoding
         /// becomes the length of the file (for maximum reliability). 'text' is simply
         /// the string with the discovered encoding applied to the file.
         /// </summary>
-        public static Encoding DetectTextEncoding(string filename, out string text, bool provideText, int taster = 0,
+        private static Encoding DetectTextEncoding(string filename, out string text, bool provideText, int taster = 0,
             Encoding fallbackEncoding = null)
         {
             var b = File.ReadAllBytes(filename);
@@ -91,8 +82,7 @@ namespace MagicFileEncoding
             // the encoding. A high taster value is desired for UTF-8
             if (taster == 0 || taster > b.Length)
                 taster = b.Length; // Taster size can't be bigger than the filesize obviously.
-
-
+            
             // Some text files are encoded in UTF8, but have no BOM/signature. Hence
             // the below manually checks for a UTF8 pattern.
             // For the below, false positives should be exceedingly rare (and would
@@ -150,12 +140,12 @@ namespace MagicFileEncoding
             // The next check is a heuristic attempt to detect UTF-16 without a BOM.
             // We simply look for zeroes in odd or even byte places, and if a certain
             // threshold is reached, the code is 'probably' UF-16.          
-            var threshold = 0.1; // proportion of chars step 2 which must be zeroed to be diagnosed as utf-16. 0.1 = 10%
-            var count = 0;
+            const double threshold = 0.1; // proportion of chars step 2 which must be zeroed to be diagnosed as utf-16. 0.1 = 10%
+            double count = 0;
             for (var n = 0; n < taster; n += 2)
                 if (b[n] == 0)
                     count++;
-            if ((double) count / taster > threshold)
+            if (count / taster > threshold)
             {
                 text = provideText ? Encoding.BigEndianUnicode.GetString(b) : null;
                 return Encoding.BigEndianUnicode;
@@ -166,7 +156,7 @@ namespace MagicFileEncoding
                 if (b[n] == 0)
                     count++;
             
-            if ((double) count / taster > threshold)
+            if (count / taster > threshold)
             {
                 // unicode little-endian
                 text = provideText ? Encoding.Unicode.GetString(b) : null;
@@ -235,7 +225,7 @@ namespace MagicFileEncoding
         /// <summary>
         /// Get the encoding by byte order mark
         /// </summary>
-        public static Encoding GetEncodingByBom(string filename, Encoding fallbackEncoding = null)
+        private static Encoding GetEncodingByBom(string filename, Encoding fallbackEncoding = null)
         {
             using var file = new FileStream(filename, FileMode.Open, FileAccess.Read);
             return GetEncodingByBom(file, fallbackEncoding ?? DefaultFallback);
@@ -244,7 +234,7 @@ namespace MagicFileEncoding
         /// <summary>
         /// Try to get the encoding by byte order mark
         /// </summary>
-        public static Encoding GetEncodingByBom(FileStream fileStream, Encoding defaultEncoding)
+        private static Encoding GetEncodingByBom(FileStream fileStream, Encoding defaultEncoding)
         {
             // Read the BOM
             var bom = new byte[4];

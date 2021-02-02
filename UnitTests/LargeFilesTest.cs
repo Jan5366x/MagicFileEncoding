@@ -24,7 +24,7 @@ namespace UnitTests
 
             using var tmpFile = new TempFile();
             
-            var text = FileEncoding.AutomaticReadAllText(filePath, Encoding.Unicode);
+            var text = FileEncoding.ReadAllText(filePath, Encoding.Unicode);
             
             FileEncoding.WriteAllText(tmpFile.Path, text, Encoding.UTF8);
             
@@ -48,7 +48,7 @@ namespace UnitTests
 
             using var tmpFile = new TempFile();
             
-            var text = FileEncoding.AutomaticReadAllText(filePath, Encoding.UTF8);
+            var text = FileEncoding.ReadAllText(filePath, Encoding.UTF8);
             
             FileEncoding.WriteAllText(tmpFile.Path, text, Encoding.UTF8);
             
@@ -72,7 +72,7 @@ namespace UnitTests
 
             using var tmpFile = new TempFile();
             
-            var text = FileEncoding.AutomaticReadAllText(filePath, Encoding.Unicode);
+            var text = FileEncoding.ReadAllText(filePath, Encoding.Unicode);
             
             FileEncoding.WriteAllText(tmpFile.Path, text, AdditionalEncoding.ISO_8859_1);
             
