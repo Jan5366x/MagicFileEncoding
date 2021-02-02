@@ -11,23 +11,23 @@ namespace MagicFileEncoding
         /// The fallback encoding<br />
         /// <i>ISO-8859-1 (Latin-1)by default</i>
         /// </summary>
-        public Encoding FallbackEncoding { get; set; } = AdditionalEncoding.ISO_8859_1;
+        private static readonly Encoding defaultFallback= AdditionalEncoding.ISO_8859_1;
         
         /// <summary>
         /// Find a acceptable encoding to open a given file
         /// </summary>
-        public Encoding GetAcceptableEncoding(string filename)
+        public static Encoding GetAcceptableEncoding(string filename, Encoding fallbackEncoding = null)
         {
             var encoding = DetectTextEncoding(filename, out _, false);
 
             // We have no idea what this is so we use the fallback encoding
-            return encoding ?? FallbackEncoding;
+            return encoding ?? fallbackEncoding ?? defaultFallback;
         }
 
         /// <summary>
         /// target encoding is Unicode UTF16
         /// </summary>
-        public string AutomaticReadAllText(string filename)
+        public static string AutomaticReadAllText(string filename)
         {
             return Encoding.Unicode.GetString(AutomaticTransformBytes(filename, Encoding.Unicode));
         }
@@ -35,7 +35,7 @@ namespace MagicFileEncoding
         /// <summary>
         /// Automatic detect acceptable encoding and read all text from a given file
         /// </summary>
-        public string AutomaticReadAllText(string filename, Encoding targetEncoding)
+        public static string AutomaticReadAllText(string filename, Encoding targetEncoding)
         { 
             return targetEncoding
                 .GetString(AutomaticTransformBytes(filename, targetEncoding))
@@ -46,7 +46,7 @@ namespace MagicFileEncoding
         /// Write all text to a given file in the default encoding
         /// </summary>
         /// <see cref="Encoding.Default"/>
-        public void WriteAllText(string path, string contents)
+        public static void WriteAllText(string path, string contents)
         {
             File.WriteAllText(path, contents, Encoding.Default);
         }
@@ -54,7 +54,7 @@ namespace MagicFileEncoding
         /// <summary>
         /// Write all text to a given file in a specific encoding
         /// </summary>
-        public void WriteAllText(string path, string contents, Encoding targetEncoding)
+        public static void WriteAllText(string path, string contents, Encoding targetEncoding)
         {
             File.WriteAllText(path, contents, targetEncoding);
         }
@@ -62,7 +62,7 @@ namespace MagicFileEncoding
         /// <summary>
         /// Automatic Transform Bytes
         /// </summary>
-        public byte[] AutomaticTransformBytes(string filename, Encoding targetEncoding)
+        public static byte[] AutomaticTransformBytes(string filename, Encoding targetEncoding)
         { 
             return Encoding.Convert(GetAcceptableEncoding(filename), 
                 targetEncoding, File.ReadAllBytes(filename));
@@ -77,7 +77,8 @@ namespace MagicFileEncoding
         /// becomes the length of the file (for maximum reliability). 'text' is simply
         /// the string with the discovered encoding applied to the file.
         /// </summary>
-        public Encoding DetectTextEncoding(string filename, out string text, bool provideText, int taster = 0)
+        public static Encoding DetectTextEncoding(string filename, out string text, bool provideText, int taster = 0,
+            Encoding fallbackEncoding = null)
         {
             var b = File.ReadAllBytes(filename);
 
@@ -176,8 +177,8 @@ namespace MagicFileEncoding
                 return encoding;
             
             // use the fallback encoding
-            text = provideText ? FallbackEncoding.GetString(b) : null;
-            return FallbackEncoding;
+            text = provideText ? (fallbackEncoding ?? defaultFallback).GetString(b) : null;
+            return fallbackEncoding ?? defaultFallback;
         }
 
         /// <summary>
@@ -234,18 +235,10 @@ namespace MagicFileEncoding
         /// <summary>
         /// Get the encoding by byte order mark
         /// </summary>
-        public Encoding GetEncodingByBom(string filename)
-        {
-            return GetEncodingByBom(filename, FallbackEncoding);
-        }
-
-        /// <summary>
-        /// Get the encoding by byte order mark
-        /// </summary>
-        public Encoding GetEncodingByBom(string filename, Encoding defaultEncoding)
+        public static Encoding GetEncodingByBom(string filename, Encoding fallbackEncoding = null)
         {
             using var file = new FileStream(filename, FileMode.Open, FileAccess.Read);
-            return GetEncodingByBom(file, defaultEncoding);
+            return GetEncodingByBom(file, fallbackEncoding ?? defaultFallback);
         }
         
         /// <summary>
