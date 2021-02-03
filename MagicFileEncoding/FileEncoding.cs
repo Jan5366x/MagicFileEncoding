@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace MagicFileEncoding
@@ -282,6 +283,15 @@ namespace MagicFileEncoding
         }
 
         /// <summary>
+        /// Check if a byte array starts with a given byte signature
+        /// </summary>
+        /// <param name="bytes">The byte array</param>
+        /// <param name="signature">The byte signature</param>
+        /// <returns>Returns <i>true</i> if the array starts with a given byte signature</returns>
+        private static bool SignatureMatch(byte[] bytes, params byte[] signature) 
+            => bytes.Length >= signature.Length && !signature.Where((t, i) => bytes[i] != t).Any();
+
+        /// <summary>
         /// Try to get the encoding by byte order mark and provide text if available and needed
         /// </summary>
         /// <param name="bytes">File byte array</param>
@@ -289,43 +299,40 @@ namespace MagicFileEncoding
         /// <param name="text">Text output if text should be provided</param>
         /// <param name="provideText">Boolean value to indicate if text sould be provided</param>
         /// <returns>Encoding by bom or fallback</returns>
-        private static Encoding GetEncodingByBom(byte[] bytes, Encoding fallback, out string text,
-            bool provideText)
+        private static Encoding GetEncodingByBom(byte[] bytes, Encoding fallback, out string text, bool provideText)
         {
-
             // BOM signature exists
-            if (bytes.Length >= 4 && bytes[0] == 0x00 && bytes[1] == 0x00 && bytes[2] == 0xFE && bytes[3] == 0xFF)
+            if (SignatureMatch(bytes, 0x00, 0x00, 0xFE, 0xFF))
             {
-                // UTF-32, big-endian
                 text = provideText ? AdditionalEncoding.UTF_32BE.GetString(bytes, 4, bytes.Length - 4) : null;
                 return AdditionalEncoding.UTF_32BE;
             }  
 
-            if (bytes.Length >= 4 && bytes[0] == 0xFF && bytes[1] == 0xFE && bytes[2] == 0x00 && bytes[3] == 0x00)
+            if (SignatureMatch(bytes, 0xFF, 0xFE, 0x00, 0x00))
             {
                 text = provideText ? Encoding.UTF32.GetString(bytes, 4, bytes.Length - 4) : null;
                 return Encoding.UTF32;
             }
 
-            if (bytes.Length >= 2 && bytes[0] == 0xFE && bytes[1] == 0xFF)
+            if (SignatureMatch(bytes, 0xFE, 0xFF))
             {
                 text = provideText ? Encoding.BigEndianUnicode.GetString(bytes, 2, bytes.Length - 2) : null;
                 return Encoding.BigEndianUnicode;
             }
 
-            if (bytes.Length >= 2 && bytes[0] == 0xFF && bytes[1] == 0xFE)
+            if (SignatureMatch(bytes, 0xFF, 0xFE))
             {
                 text = provideText ? Encoding.Unicode.GetString(bytes, 2, bytes.Length - 2) : null;
                 return Encoding.Unicode;
             }
 
-            if (bytes.Length >= 3 && bytes[0] == 0xEF && bytes[1] == 0xBB && bytes[2] == 0xBF)
+            if (SignatureMatch(bytes, 0xEF, 0xBB, 0xBF))
             {
                 text = provideText ? Encoding.UTF8.GetString(bytes, 3, bytes.Length - 3) : null;
                 return Encoding.UTF8;
             }
 
-            if (bytes.Length >= 3 && bytes[0] == 0x2b && bytes[1] == 0x2f && bytes[2] == 0x76)
+            if (SignatureMatch(bytes,0x2b, 0x2f, 0x76))
             {
                 text = provideText ? Encoding.UTF7.GetString(bytes, 3, bytes.Length - 3) : null;
                 return Encoding.UTF7;
