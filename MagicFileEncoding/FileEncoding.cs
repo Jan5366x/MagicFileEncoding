@@ -5,7 +5,6 @@ using System.Text;
 
 namespace MagicFileEncoding
 {
-    
     /// <summary>
     /// Magic File Encoding Static Class
     /// </summary>
@@ -148,7 +147,6 @@ namespace MagicFileEncoding
                 return Encoding.UTF8;
             }
 
-
             // The next check is a heuristic attempt to detect UTF-16 without a BOM.
             // We simply look for zeroes in odd or even byte places, and if a certain
             // threshold is reached, the code is 'probably' UF-16.          
@@ -260,7 +258,9 @@ namespace MagicFileEncoding
         /// <returns></returns>
         private static Encoding GetEncodingByBom(FileStream fileStream, Encoding defaultEncoding)
         {
-            // Read the BOM
+            if (fileStream == null) 
+                throw new ArgumentNullException(nameof(fileStream));
+            
             var bom = new byte[4];
             fileStream.Position = 0;
             fileStream.Read(bom, 0, 4);
