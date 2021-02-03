@@ -23,13 +23,8 @@ namespace MagicFileEncoding
         /// <param name="filename">The file to check</param>
         /// <param name="fallbackEncoding">The fallback encoding (ISO-8859-1 by default)</param>
         /// <returns>Best suitable encoding</returns>
-        public static Encoding GetAcceptableEncoding(string filename, Encoding fallbackEncoding = null)
-        {
-            var encoding = DetectTextEncoding(filename, out _, false);
-
-            // We have no idea what this is so we use the fallback encoding
-            return encoding ?? fallbackEncoding ?? DefaultFallback;
-        }
+        public static Encoding GetAcceptableEncoding(string filename, Encoding fallbackEncoding = null) 
+            => DetectTextEncoding(filename, out _, false) ?? fallbackEncoding ?? DefaultFallback;
 
         /// <summary>
         /// Automatic detect acceptable encoding and read all text from a given file and transform it into
@@ -37,11 +32,9 @@ namespace MagicFileEncoding
         /// </summary>
         /// <param name="filename">The file to read text</param>
         /// <returns></returns>
-        public static string ReadAllText(string filename)
-        {
-            return Encoding.Unicode.GetString(AutomaticTransformBytes(filename, Encoding.Unicode));
-        }
-        
+        public static string ReadAllText(string filename) 
+            => Encoding.Unicode.GetString(AutomaticTransformBytes(filename, Encoding.Unicode));
+
         /// <summary>
         /// Automatic detect acceptable encoding and read all text from a given file and transform it into
         /// a given target encoding
@@ -50,22 +43,18 @@ namespace MagicFileEncoding
         /// <param name="targetEncoding">The target encoding to transform to the return value</param>
         /// <returns></returns>
         public static string ReadAllText(string filename, Encoding targetEncoding)
-        { 
-            return targetEncoding
+            => targetEncoding
                 .GetString(AutomaticTransformBytes(filename, targetEncoding))
                 .Trim(new[]{'\uFEFF'});
-        }
-        
+
         /// <summary>
         /// Write all text to a given file in a specific encoding
         /// </summary>
         /// <param name="path">The path to the text file</param>
         /// <param name="text">Text to encode and write to file</param>
         /// <param name="targetEncoding">Target encoding</param>
-        public static void WriteAllText(string path, string text, Encoding targetEncoding)
-        {
-            File.WriteAllText(path, text, targetEncoding);
-        }
+        public static void WriteAllText(string path, string text, Encoding targetEncoding) 
+            => File.WriteAllText(path, text, targetEncoding);
 
         /// <summary>
         /// Automatic transform bytes
@@ -73,11 +62,8 @@ namespace MagicFileEncoding
         /// <param name="filename">The file to analyze</param>
         /// <param name="targetEncoding"></param>
         /// <returns></returns>
-        private static byte[] AutomaticTransformBytes(string filename, Encoding targetEncoding)
-        { 
-            return Encoding.Convert(GetAcceptableEncoding(filename), 
-                targetEncoding, File.ReadAllBytes(filename));
-        }
+        private static byte[] AutomaticTransformBytes(string filename, Encoding targetEncoding) 
+            => Encoding.Convert(GetAcceptableEncoding(filename), targetEncoding, File.ReadAllBytes(filename));
 
         /// <summary>
         /// Function to detect the encoding for UTF-7, UTF-8/16/32 (bom, no bom, little
