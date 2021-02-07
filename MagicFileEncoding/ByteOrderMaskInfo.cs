@@ -6,14 +6,14 @@ namespace MagicFileEncoding
     {
         public Encoding Encoding { get; }
 
-        public byte[] Mask { get; }
+        public byte[] Signature { get; }
         
-        public ByteOrderMaskInfo(Encoding encoding, params byte[] mask)
+        public ByteOrderMaskInfo(Encoding encoding, params byte[] signature)
         {
             Encoding = encoding;
-            Mask = mask;
+            Signature = signature;
         }
 
-        public int MaskLength() => Mask.Length;
+        public int SignatureLength() => Signature.Length;
     }
 }

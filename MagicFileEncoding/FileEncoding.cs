@@ -287,35 +287,24 @@ namespace MagicFileEncoding
         /// <returns>Encoding by bom or fallback</returns>
         private static Encoding GetEncodingByBom(byte[] bytes, Encoding fallback, out string text, bool provideText)
         {
-            // BOM signature exists
-            if (SignatureMatch(bytes, 0x00, 0x00, 0xFE, 0xFF))
-                return TextProvider(AdditionalEncoding.UTF32BE,4, bytes, out text, provideText);
-
-            if (SignatureMatch(bytes, 0xFF, 0xFE, 0x00, 0x00))
-                return TextProvider(Encoding.UTF32, 4, bytes, out text, provideText);
-           
-            if (SignatureMatch(bytes, 0xFE, 0xFF))
-                return TextProvider(Encoding.BigEndianUnicode, 2, bytes, out text, provideText);
-
-            if (SignatureMatch(bytes, 0xFF, 0xFE))
-                return TextProvider(Encoding.Unicode, 2, bytes, out text, provideText);
-
-            if (SignatureMatch(bytes, 0xEF, 0xBB, 0xBF))
-                return TextProvider(Encoding.UTF8, 3, bytes, out text, provideText);
             
-            if (SignatureMatch(bytes,0x2b, 0x2f, 0x76))
-                return TextProvider(Encoding.UTF7, 3, bytes, out text, provideText);
-
+            foreach (var bom in ByteOrderMask.List)
+                if (SignatureMatch(bytes, bom.Signature))
+                    return GetEncodingAndProvideText(bom, bytes, out text, provideText);
+            
             text = provideText ? fallback?.GetString(bytes) : null;
             
             // We actually have no idea what the encoding is if we reach this point, so return default
             return fallback;
         }
 
-        private static Encoding TextProvider(Encoding encoding, int byteOffset, byte[] bytes, out string text, bool provideText)
+        private static Encoding GetEncodingAndProvideText(ByteOrderMaskInfo orderMaskInfo, byte[] bytes,
+            out string text, bool provideText)
         {
-            text = provideText ? encoding.GetString(bytes, byteOffset, bytes.Length - byteOffset) : null;
-            return encoding;
+            text = provideText ? orderMaskInfo.Encoding.GetString(bytes, orderMaskInfo.SignatureLength(),
+                bytes.Length - orderMaskInfo.SignatureLength()) : null;
+            
+            return orderMaskInfo.Encoding;
         }
     }
 }
