@@ -13,24 +13,19 @@ It is strongly recommended to write unit tests for your use case to ensure the l
 
 #### Read a text file
 ```csharp
-var text = new FileEncoding().AutomaticReadAllText(filename);
+var text = FileEncoding.ReadAllText(filePath, Encoding.Unicode);
 ```
 #### Write a text file
 ```csharp
-new FileEncoding().WriteAllText(tmpFile.Path, text, Encoding.UTF8);
+FileEncoding.WriteAllText(tmpFile.Path, text, Encoding.UTF8);
 ```
 #### Just detect suitable encoding
 ```csharp
-var encoding = new FileEncoding().GetAcceptableEncoding(filename);
+var encoding = FileEncoding.GetAcceptableEncoding(filename);
 ```
-#### Change fallback (default) encoding
-```csharp
-var fe = new FileEncoding();
-fe.FallbackEncoding = Encoding.Unicode;
-var str = fe.AutomaticReadAllText(filename);
-```
+
 ## Fallback Encoding
-The fallback encoding is ISO-8859-1 (Latin-1) by default but can be changed via property.
+The fallback encoding is ISO-8859-1 (Latin-1) by default but can be changed via optional method argument.
 
 (Because this lib was designed for the german culture space)
 
