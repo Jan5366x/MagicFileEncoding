@@ -289,45 +289,33 @@ namespace MagicFileEncoding
         {
             // BOM signature exists
             if (SignatureMatch(bytes, 0x00, 0x00, 0xFE, 0xFF))
-            {
-                text = provideText ? AdditionalEncoding.UTF_32BE.GetString(bytes, 4, bytes.Length - 4) : null;
-                return AdditionalEncoding.UTF_32BE;
-            }  
+                return TextProvider(AdditionalEncoding.UTF_32BE,4, bytes, out text, provideText);
 
             if (SignatureMatch(bytes, 0xFF, 0xFE, 0x00, 0x00))
-            {
-                text = provideText ? Encoding.UTF32.GetString(bytes, 4, bytes.Length - 4) : null;
-                return Encoding.UTF32;
-            }
-
+                return TextProvider(Encoding.UTF32, 4, bytes, out text, provideText);
+           
             if (SignatureMatch(bytes, 0xFE, 0xFF))
-            {
-                text = provideText ? Encoding.BigEndianUnicode.GetString(bytes, 2, bytes.Length - 2) : null;
-                return Encoding.BigEndianUnicode;
-            }
+                return TextProvider(Encoding.BigEndianUnicode, 2, bytes, out text, provideText);
 
             if (SignatureMatch(bytes, 0xFF, 0xFE))
-            {
-                text = provideText ? Encoding.Unicode.GetString(bytes, 2, bytes.Length - 2) : null;
-                return Encoding.Unicode;
-            }
+                return TextProvider(Encoding.Unicode, 2, bytes, out text, provideText);
 
             if (SignatureMatch(bytes, 0xEF, 0xBB, 0xBF))
-            {
-                text = provideText ? Encoding.UTF8.GetString(bytes, 3, bytes.Length - 3) : null;
-                return Encoding.UTF8;
-            }
-
-            if (SignatureMatch(bytes,0x2b, 0x2f, 0x76))
-            {
-                text = provideText ? Encoding.UTF7.GetString(bytes, 3, bytes.Length - 3) : null;
-                return Encoding.UTF7;
-            }
+                return TextProvider(Encoding.UTF8, 3, bytes, out text, provideText);
             
+            if (SignatureMatch(bytes,0x2b, 0x2f, 0x76))
+                return TextProvider(Encoding.UTF7, 3, bytes, out text, provideText);
+
             text = provideText ? fallback?.GetString(bytes) : null;
             
             // We actually have no idea what the encoding is if we reach this point, so return default
             return fallback;
+        }
+
+        private static Encoding TextProvider(Encoding encoding, int byteOffset, byte[] bytes, out string text, bool provideText)
+        {
+            text = provideText ? encoding.GetString(bytes, byteOffset, bytes.Length - byteOffset) : null;
+            return encoding;
         }
     }
 }
