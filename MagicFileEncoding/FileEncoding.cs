@@ -289,7 +289,7 @@ namespace MagicFileEncoding
         {
             // BOM signature exists
             if (SignatureMatch(bytes, 0x00, 0x00, 0xFE, 0xFF))
-                return TextProvider(AdditionalEncoding.UTF_32BE,4, bytes, out text, provideText);
+                return TextProvider(AdditionalEncoding.UTF32BE,4, bytes, out text, provideText);
 
             if (SignatureMatch(bytes, 0xFF, 0xFE, 0x00, 0x00))
                 return TextProvider(Encoding.UTF32, 4, bytes, out text, provideText);
