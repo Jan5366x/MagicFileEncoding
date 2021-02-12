@@ -1,6 +1,6 @@
 # Magic File Encoding
 
-The Magic File Encoding lib helps to load and transform simple an closed scope char set text files.
+The Magic File Encoding lib helps to load and transform simple an closed scope char set text files (like EDIFACT).
 
 Be aware of possible transformation issues if the target encoding is more simple than the source encoding.
 

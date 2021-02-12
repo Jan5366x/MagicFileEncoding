@@ -30,7 +30,7 @@ namespace MagicFileEncoding
         /// Unicode UTF16 encoding
         /// </summary>
         /// <param name="filename">The file to read text</param>
-        /// <returns></returns>
+        /// <returns>Returns the text</returns>
         public static string ReadAllText(string filename) 
             => Encoding.Unicode.GetString(AutomaticTransformBytes(filename, Encoding.Unicode));
 
@@ -40,7 +40,7 @@ namespace MagicFileEncoding
         /// </summary>
         /// <param name="filename">The file to read text</param>
         /// <param name="targetEncoding">The target encoding to transform to the return value</param>
-        /// <returns></returns>
+        /// <returns>Returns the text</returns>
         public static string ReadAllText(string filename, Encoding targetEncoding)
             => targetEncoding
                 .GetString(AutomaticTransformBytes(filename, targetEncoding))
@@ -60,9 +60,10 @@ namespace MagicFileEncoding
         /// </summary>
         /// <param name="filename">The file to analyze</param>
         /// <param name="targetEncoding"></param>
-        /// <returns></returns>
+        /// <returns>Transformed byte array</returns>
         private static byte[] AutomaticTransformBytes(string filename, Encoding targetEncoding) 
-            => Encoding.Convert(GetAcceptableEncoding(filename), targetEncoding, File.ReadAllBytes(filename));
+            => Encoding.Convert(GetAcceptableEncoding(filename), targetEncoding,
+                File.ReadAllBytes(filename));
 
         /// <summary>
         /// Function to detect the encoding for UTF-7, UTF-8/16/32 (bom, no bom, little
@@ -74,11 +75,11 @@ namespace MagicFileEncoding
         /// the string with the discovered encoding applied to the file.
         /// </summary>
         /// <param name="filename">The file to analyze</param>
-        /// <param name="text"></param>
-        /// <param name="provideText"></param>
-        /// <param name="taster"></param>
-        /// <param name="fallbackEncoding"></param>
-        /// <returns></returns>
+        /// <param name="text">The text output</param>
+        /// <param name="provideText">Flag if text should be provided to the text output</param>
+        /// <param name="taster">The taster depth</param>
+        /// <param name="fallbackEncoding">The fallback encoding which should be used if we have no match</param>
+        /// <returns>Returns the detected encoding</returns>
         private static Encoding DetectTextEncoding(string filename, out string text, bool provideText, int taster = 0,
             Encoding fallbackEncoding = null)
         {
@@ -149,8 +150,11 @@ namespace MagicFileEncoding
 
             // The next check is a heuristic attempt to detect UTF-16 without a BOM.
             // We simply look for zeroes in odd or even byte places, and if a certain
-            // threshold is reached, the code is 'probably' UF-16.          
-            const double threshold = 0.1; // proportion of chars step 2 which must be zeroed to be diagnosed as utf-16. 0.1 = 10%
+            // threshold is reached, the code is 'probably' UF-16.
+            
+            // proportion of chars step 2 which must be zeroed to be diagnosed as utf-16. 0.1 = 10%
+            const double threshold = 0.1;
+            
             double count = 0;
             for (var n = 0; n < taster; n += 2)
                 if (b[n] == 0)
@@ -185,12 +189,12 @@ namespace MagicFileEncoding
         /// A long shot - let's see if we can find "charset=xyz" or
         /// "encoding=xyz" to identify the encoding:
         /// </summary>
-        /// <param name="text"></param>
-        /// <param name="provideText"></param>
-        /// <param name="taster"></param>
-        /// <param name="b"></param>
-        /// <param name="encoding"></param>
-        /// <returns></returns>
+        /// <param name="text">The text output</param>
+        /// <param name="provideText">Flag if text should be provided to the text output</param>
+        /// <param name="taster">Taster depth</param>
+        /// <param name="b">The byte array</param>
+        /// <param name="encoding">The encoding</param>
+        /// <returns>Returns <i>true</i> if the long shot was successful</returns>
         private static bool LongShot(ref string text, bool provideText, int taster, byte[] b, out Encoding encoding)
         {
             for (var n = 0; n < taster - 9; n++)
