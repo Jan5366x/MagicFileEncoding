@@ -234,6 +234,12 @@ namespace MagicFileEncoding
             return false;
         }
 
+        /// <summary>
+        /// Is encoding marker
+        /// </summary>
+        /// <param name="b">The byte array</param>
+        /// <param name="n">Location</param>
+        /// <returns>Returns <i>true</i> if encoding marker was found</returns>
         private static bool IsEncodingMarker(byte[] b, int n)
         {
             return ((b[n + 0] == 'e' || b[n + 0] == 'E') && (b[n + 1] == 'n' || b[n + 1] == 'N') &&
@@ -242,6 +248,12 @@ namespace MagicFileEncoding
                     (b[n + 6] == 'n' || b[n + 6] == 'N') && (b[n + 7] == 'g' || b[n + 7] == 'G') && b[n + 8] == '=');
         }
 
+        /// <summary>
+        /// Is charset marker
+        /// </summary>
+        /// <param name="b">The byte array</param>
+        /// <param name="n">Location</param>
+        /// <returns>Returns <i>true</i> if charset marker was found</returns>
         private static bool IsCharsetMarker(byte[] b, int n)
         {
             return ((b[n + 0] == 'c' || b[n + 0] == 'C') && (b[n + 1] == 'h' || b[n + 1] == 'H') &&
@@ -250,6 +262,13 @@ namespace MagicFileEncoding
                     (b[n + 6] == 't' || b[n + 6] == 'T') && b[n + 7] == '=');
         }
 
+        /// <summary>
+        /// Is charset name in range
+        /// </summary>
+        /// <param name="taster">The byte array</param>
+        /// <param name="b">The byte array</param>
+        /// <param name="n">Location</param>
+        /// <returns>Returns <i>true</i> if charset name in range</returns>
         private static bool IsCharsetNameRange(int taster, byte[] b, int n)
         {
             return n < taster && (b[n] == '_' || b[n] == '-' || b[n] >= '0' && b[n] <= '9' 
@@ -260,7 +279,7 @@ namespace MagicFileEncoding
         /// Get the encoding by byte order mark
         /// </summary>
         /// <param name="filename">The file to analyze</param>
-        /// <param name="fallbackEncoding"></param>
+        /// <param name="fallbackEncoding">The fallback encoding</param>
         /// <returns></returns>
         private static Encoding GetEncodingByBom(string filename, Encoding fallbackEncoding = null)
         {
@@ -272,9 +291,9 @@ namespace MagicFileEncoding
         /// Try to get the encoding by byte order mark
         /// </summary>
         /// <param name="fileStream">The file stream to read bytes from</param>
-        /// <param name="defaultEncoding"></param>
+        /// <param name="fallbackEncoding">The fallback encoding</param>
         /// <returns></returns>
-        private static Encoding GetEncodingByBom(FileStream fileStream, Encoding defaultEncoding)
+        private static Encoding GetEncodingByBom(FileStream fileStream, Encoding fallbackEncoding)
         {
             if (fileStream == null) 
                 throw new ArgumentNullException(nameof(fileStream));
@@ -283,7 +302,7 @@ namespace MagicFileEncoding
             fileStream.Position = 0;
             fileStream.Read(bom, 0, 4);
 
-            return GetEncodingByBom( bom, defaultEncoding, out _,false);
+            return GetEncodingByBom( bom, fallbackEncoding, out _,false);
         }
 
         /// <summary>
@@ -316,6 +335,14 @@ namespace MagicFileEncoding
             return fallback;
         }
 
+        /// <summary>
+        /// Get Encoding and provide encoded text if wanted
+        /// </summary>
+        /// <param name="orderMaskInfo">The order mask information to use</param>
+        /// <param name="bytes">The byte array</param>
+        /// <param name="text">Text output</param>
+        /// <param name="provideText">Flag if text should be provided to the text output</param>
+        /// <returns></returns>
         private static Encoding GetEncodingAndProvideText(ByteOrderMaskInfo orderMaskInfo, byte[] bytes,
             out string text, bool provideText)
         {
