@@ -280,7 +280,7 @@ namespace MagicFileEncoding
         /// </summary>
         /// <param name="filename">The file to analyze</param>
         /// <param name="fallbackEncoding">The fallback encoding</param>
-        /// <returns></returns>
+        /// <returns>Returns the encoding by bom or the fallback</returns>
         private static Encoding GetEncodingByBom(string filename, Encoding fallbackEncoding = null)
         {
             using var file = new FileStream(filename, FileMode.Open, FileAccess.Read);
@@ -292,7 +292,7 @@ namespace MagicFileEncoding
         /// </summary>
         /// <param name="fileStream">The file stream to read bytes from</param>
         /// <param name="fallbackEncoding">The fallback encoding</param>
-        /// <returns></returns>
+        /// <returns>Returns the encoding by bom or the fallback</returns>
         private static Encoding GetEncodingByBom(FileStream fileStream, Encoding fallbackEncoding)
         {
             if (fileStream == null) 
@@ -304,16 +304,7 @@ namespace MagicFileEncoding
 
             return GetEncodingByBom( bom, fallbackEncoding, out _,false);
         }
-
-        /// <summary>
-        /// Check if a byte array starts with a given byte signature
-        /// </summary>
-        /// <param name="bytes">The byte array</param>
-        /// <param name="signature">The byte signature</param>
-        /// <returns>Returns <i>true</i> if the array starts with a given byte signature</returns>
-        private static bool SignatureMatch(byte[] bytes, params byte[] signature) 
-            => bytes.Length >= signature.Length && !signature.Where((t, i) => bytes[i] != t).Any();
-
+        
         /// <summary>
         /// Try to get the encoding by byte order mark and provide text if available and needed
         /// </summary>
@@ -321,7 +312,7 @@ namespace MagicFileEncoding
         /// <param name="fallback">Fallback encoding</param>
         /// <param name="text">Text output if text should be provided</param>
         /// <param name="provideText">Boolean value to indicate if text sould be provided</param>
-        /// <returns>Encoding by bom or fallback</returns>
+        /// <returns>Returns the encoding by bom or the fallback</returns>
         private static Encoding GetEncodingByBom(byte[] bytes, Encoding fallback, out string text, bool provideText)
         {
             
@@ -334,7 +325,16 @@ namespace MagicFileEncoding
             // We actually have no idea what the encoding is if we reach this point, so return default
             return fallback;
         }
-
+        
+        /// <summary>
+        /// Check if a byte array starts with a given byte signature
+        /// </summary>
+        /// <param name="bytes">The byte array</param>
+        /// <param name="signature">The byte signature</param>
+        /// <returns>Returns <i>true</i> if the array starts with a given byte signature</returns>
+        private static bool SignatureMatch(byte[] bytes, params byte[] signature) 
+            => bytes.Length >= signature.Length && !signature.Where((t, i) => bytes[i] != t).Any();
+        
         /// <summary>
         /// Get Encoding and provide encoded text if wanted
         /// </summary>
