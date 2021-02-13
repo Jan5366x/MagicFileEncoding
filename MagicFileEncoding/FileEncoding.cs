@@ -40,10 +40,11 @@ namespace MagicFileEncoding
         /// </summary>
         /// <param name="filename">The file to read text</param>
         /// <param name="targetEncoding">The target encoding to transform to the return value</param>
+        /// <param name="fallbackEncoding">Fallback encoding for the input</param>
         /// <returns>Returns the text</returns>
-        public static string ReadAllText(string filename, Encoding targetEncoding)
+        public static string ReadAllText(string filename, Encoding targetEncoding, Encoding fallbackEncoding = null)
             => targetEncoding
-                .GetString(AutomaticTransformBytes(filename, targetEncoding))
+                .GetString(AutomaticTransformBytes(filename, targetEncoding, fallbackEncoding))
                 .Trim(new[]{'\uFEFF'});
 
         /// <summary>
@@ -59,10 +60,12 @@ namespace MagicFileEncoding
         /// Automatic transform bytes
         /// </summary>
         /// <param name="filename">The file to analyze</param>
-        /// <param name="targetEncoding"></param>
+        /// <param name="targetEncoding">The output target encoding</param>
+        /// <param name="fallbackEncoding">Fallback encoding for the input</param>
         /// <returns>Transformed byte array</returns>
-        private static byte[] AutomaticTransformBytes(string filename, Encoding targetEncoding) 
-            => Encoding.Convert(GetAcceptableEncoding(filename), targetEncoding,
+        private static byte[] AutomaticTransformBytes(string filename, Encoding targetEncoding, 
+            Encoding fallbackEncoding = null) 
+            => Encoding.Convert(GetAcceptableEncoding(filename,fallbackEncoding), targetEncoding,
                 File.ReadAllBytes(filename));
 
         /// <summary>

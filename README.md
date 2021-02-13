@@ -13,6 +13,8 @@ It is strongly recommended to write unit tests for your use case to ensure the l
 
 #### Read a text file
 ```csharp
+var text = FileEncoding.ReadAllText(filePath);
+// or 
 var text = FileEncoding.ReadAllText(filePath, Encoding.Unicode);
 ```
 #### Write a text file
