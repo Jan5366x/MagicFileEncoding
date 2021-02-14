@@ -1,6 +1,7 @@
 # Magic File Encoding
 
 [![NuGet Downloads](https://img.shields.io/nuget/dt/MagicFileEncoding.svg)](https://www.nuget.org/packages/MagicFileEncoding/)
+[![Actions Status](https://github.com/Jan5366x/MagicFileEncoding/workflows/Build%20and%20Test/badge.svg)](https://github.com/Jan5366x/MagicFileEncoding/actions)
 
 The Magic File Encoding lib helps to load and transform simple and closed scope char set text files (like EDIFACT).
 
