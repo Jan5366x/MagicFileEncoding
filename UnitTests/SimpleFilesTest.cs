@@ -41,7 +41,7 @@ public class SimpleFilesTest
             
         var text = FileEncoding.ReadAllText(filePath, Encoding.Unicode);
             
-        FileEncoding.WriteAllText(tmpFile.Path, text, Encoding.UTF8);
+        FileEncoding.WriteAllText(tmpFile.Path, Encoding.UTF8, text);
             
         var expectedResultPath = TestContext.CurrentContext.WorkDirectory + "/TestFiles/SimpleFiles/A_UTF-8-BOM.txt"
             .Replace('/', Path.DirectorySeparatorChar);
@@ -65,7 +65,7 @@ public class SimpleFilesTest
             
         var text = FileEncoding.ReadAllText(filePath, Encoding.UTF8);
             
-        FileEncoding.WriteAllText(tmpFile.Path, text, Encoding.UTF8);
+        FileEncoding.WriteAllText(tmpFile.Path, Encoding.UTF8, text);
             
         var expectedResultPath = TestContext.CurrentContext.WorkDirectory + "/TestFiles/SimpleFiles/A_UTF-8-BOM.txt"
             .Replace('/', Path.DirectorySeparatorChar);
@@ -89,7 +89,7 @@ public class SimpleFilesTest
             
         var text = FileEncoding.ReadAllText(filePath, Encoding.Unicode);
             
-        FileEncoding.WriteAllText(tmpFile.Path, text, AdditionalEncoding.ISO_8859_1);
+        FileEncoding.WriteAllText(tmpFile.Path, AdditionalEncoding.ISO_8859_1, text);
             
         var expectedResultPath = TestContext.CurrentContext.WorkDirectory + "/TestFiles/SimpleFiles/A_ISO-8859-1.txt"
             .Replace('/', Path.DirectorySeparatorChar);

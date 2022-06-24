@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Text;
 using static MagicFileEncoding.Tools.EncodingTools;
 
@@ -52,6 +53,27 @@ public static class FileEncoding
     /// <param name="path">The path to the text file</param>
     /// <param name="text">Text to encode and write to file</param>
     /// <param name="targetEncoding">Target encoding</param>
-    public static void WriteAllText(string path, string text, Encoding targetEncoding) 
-        => File.WriteAllText(path, text, targetEncoding);
+    public static void WriteAllText(string path, Encoding? targetEncoding, string text) 
+        => Write(path, targetEncoding, writer => writer.Write(text));
+    
+    /// <summary>
+    /// Gives writer access to a given file in a specific encoding
+    /// </summary>
+    /// <param name="path">The path to the text file</param>
+    /// <param name="targetEncoding">Target encoding</param>
+    /// <param name="writerAction">Access to the writer (using/closing is handled)</param>
+    /// <exception cref="ArgumentNullException">If path or target encoding is null</exception>
+    /// <exception cref="ArgumentException">If a empty path is supplied</exception>
+    public static void Write(string path, Encoding? targetEncoding, Action<StreamWriter> writerAction)
+    {
+        if (path == null)
+            throw new ArgumentNullException(nameof(path));
+        if (path.Trim().Length == 0)
+            throw new ArgumentException("Can't write file because path is empty!", nameof(path));
+        if (targetEncoding == null)
+            throw new ArgumentNullException(nameof(targetEncoding));
+        
+        using var sw = new StreamWriter(path, false, targetEncoding);
+        writerAction.Invoke(sw);
+    }
 }
