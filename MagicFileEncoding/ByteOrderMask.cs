@@ -10,7 +10,7 @@ namespace MagicFileEncoding;
 public static class ByteOrderMask
 {
     public static readonly ByteOrderMaskInfo UTF32BE
-        = new (AdditionalEncoding.UTF32BE, 0x00, 0x00, 0xFE, 0xFF);
+        =  new (AdditionalEncoding.UTF32BE!, 0x00, 0x00, 0xFE, 0xFF);
     public static readonly ByteOrderMaskInfo UTF32 
         = new (Encoding.UTF32, 0xFF, 0xFE, 0x00, 0x00);
     public static readonly ByteOrderMaskInfo UTF16BE

@@ -301,6 +301,9 @@ internal static class EncodingTools
     private static Encoding GetEncodingAndProvideText(ByteOrderMaskInfo orderMaskInfo, byte[] bytes,
         out string? text, bool provideText)
     {
+        if (orderMaskInfo.Encoding == null)
+            throw new ArgumentNullException(nameof(orderMaskInfo.Encoding));
+        
         text = provideText
             ? orderMaskInfo.Encoding.GetString(bytes, orderMaskInfo.SignatureLength(),
                 bytes.Length - orderMaskInfo.SignatureLength())
