@@ -18,4 +18,13 @@ Be aware of possible transformation issues if the target encoding is simpler tha
 It is strongly recommended to write unit tests for your use case to ensure the load and transformation works as expected.</Description>
     </PropertyGroup>
 
+    <PropertyGroup>
+        <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+        <_Parameter1>UnitTests</_Parameter1>
+        </AssemblyAttribute>
+    </ItemGroup>
 </Project>
