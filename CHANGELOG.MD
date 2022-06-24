@@ -1,8 +1,10 @@
 ﻿## v2.0.0 - ?? ??? ????
 * Switch to Net 6.0
 * Enabled nullable reference types
+* Adjust nullability in the entire solution
 * Add SYSLIB0001 UTF-7 Encoding safety check
 * Remove IO Tools from public surface since they are off-topic internal logic which is object to (breaking) changes
+* Refactoring and minor improvements
 
 ## v1.1.0 - 13 Feb 2021
 * **Breaking Change!** Adjusted public api surface to static access
