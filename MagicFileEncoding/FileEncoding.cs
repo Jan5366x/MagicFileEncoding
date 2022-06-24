@@ -187,7 +187,7 @@ namespace MagicFileEncoding
             text = provideText ? (fallbackEncoding ?? DefaultFallback).GetString(b) : null;
             return fallbackEncoding ?? DefaultFallback;
         }
-
+        
         /// <summary>
         /// A long shot - let's see if we can find "charset=xyz" or
         /// "encoding=xyz" to identify the encoding:
@@ -318,7 +318,6 @@ namespace MagicFileEncoding
         /// <returns>Returns the encoding by bom or the fallback</returns>
         private static Encoding GetEncodingByBom(byte[] bytes, Encoding fallback, out string text, bool provideText)
         {
-            
             foreach (var bom in ByteOrderMask.List)
                 if (SignatureMatch(bytes, bom.Signature))
                     return GetEncodingAndProvideText(bom, bytes, out text, provideText);
@@ -354,5 +353,21 @@ namespace MagicFileEncoding
             
             return orderMaskInfo.Encoding;
         }
+        
+#pragma warning disable SYSLIB0001
+        /// <summary>
+        /// Validate Encoding Security for low hanging fruits<br /><br />
+        /// <b>Currently handled cases:</b><br /><br />
+        /// SYSLIB0001 UTF-7 encoding is not safe<br />
+        /// https://docs.microsoft.com/de-de/dotnet/fundamentals/syslib-diagnostics/syslib0001
+        /// </summary>
+        /// <param name="encoding">The encoding to check</param>
+        /// <exception cref="EncodingSecurityException">Will throw exceptions if a risk is detected</exception>
+        internal static void ValidateEncodingSecurity(Encoding encoding)
+        {
+            if (Equals(encoding, Encoding.UTF7))
+                throw new EncodingSecurityException("SYSLIB0001: The UTF-7-encoding is not safe");
+        }
+#pragma warning restore SYSLIB0001
     }
 }
