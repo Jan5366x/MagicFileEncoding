@@ -4,7 +4,7 @@ using System.IO;
 
 namespace MagicFileEncoding.Tools;
 
-internal static class IOTools
+internal static class IoTools
 {
     /// <summary>
     /// This method accepts two strings the represent two files to
@@ -92,8 +92,7 @@ internal static class IOTools
             {
                 try
                 {
-                    // Perform action
-                    if (file != null) fileWalker.Invoke(file);
+                   fileWalker.Invoke(file);
                 }
                 catch
                 {

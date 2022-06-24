@@ -22,7 +22,7 @@ public static class FileEncoding
     /// <param name="filename">The file to check</param>
     /// <param name="fallbackEncoding">The fallback encoding (ISO-8859-1 by default)</param>
     /// <returns>Best suitable encoding</returns>
-    public static Encoding GetAcceptableEncoding(string filename, Encoding fallbackEncoding = null) 
+    public static Encoding GetAcceptableEncoding(string filename, Encoding? fallbackEncoding = null) 
         => DetectTextEncoding(filename, out _, false) ?? fallbackEncoding ?? DefaultFallback;
 
     /// <summary>
@@ -42,7 +42,7 @@ public static class FileEncoding
     /// <param name="targetEncoding">The target encoding to transform to the return value</param>
     /// <param name="fallbackEncoding">Fallback encoding for the input</param>
     /// <returns>Returns the text</returns>
-    public static string ReadAllText(string filename, Encoding targetEncoding, Encoding fallbackEncoding = null)
+    public static string ReadAllText(string filename, Encoding targetEncoding, Encoding? fallbackEncoding = null)
         => targetEncoding
             .GetString(AutomaticTransformBytes(filename, targetEncoding, fallbackEncoding))
             .Trim(new[]{'\uFEFF'});
@@ -64,7 +64,7 @@ public static class FileEncoding
     /// <param name="fallbackEncoding">Fallback encoding for the input</param>
     /// <returns>Transformed byte array</returns>
     private static byte[] AutomaticTransformBytes(string filename, Encoding targetEncoding, 
-        Encoding fallbackEncoding = null) 
+        Encoding? fallbackEncoding = null) 
         => Encoding.Convert(GetAcceptableEncoding(filename,fallbackEncoding), targetEncoding,
             File.ReadAllBytes(filename));
 
@@ -83,8 +83,8 @@ public static class FileEncoding
     /// <param name="taster">The taster depth</param>
     /// <param name="fallbackEncoding">The fallback encoding which should be used if we have no match</param>
     /// <returns>Returns the detected encoding</returns>
-    private static Encoding DetectTextEncoding(string filename, out string text, bool provideText, int taster = 0,
-        Encoding fallbackEncoding = null)
+    private static Encoding? DetectTextEncoding(string filename, out string? text, bool provideText, int taster = 0,
+        Encoding? fallbackEncoding = null)
     {
         var b = File.ReadAllBytes(filename);
 
@@ -198,38 +198,38 @@ public static class FileEncoding
     /// <param name="b">The byte array</param>
     /// <param name="encoding">The encoding</param>
     /// <returns>Returns <i>true</i> if the long shot was successful</returns>
-    private static bool LongShot(ref string text, bool provideText, int taster, byte[] b, out Encoding encoding)
+    private static bool LongShot(ref string? text, bool provideText, int taster, byte[] b, out Encoding? encoding)
     {
         for (var n = 0; n < taster - 9; n++)
         {
-            if (IsCharsetMarker(b, n) || IsEncodingMarker(b, n))
+            if (!IsCharsetMarker(b, n) && !IsEncodingMarker(b, n)) 
+                continue;
+            
+            if (b[n + 0] == 'c' || b[n + 0] == 'C') n += 8;
+            else n += 9;
+
+            if (b[n] == '"' || b[n] == '\'') n++;
+
+            var oldN = n;
+
+            while (IsCharsetNameRange(taster, b, n))
+                n++;
+
+            var nb = new byte[n - oldN];
+            Array.Copy(b, oldN, nb, 0, n - oldN);
+            try
             {
-                if (b[n + 0] == 'c' || b[n + 0] == 'C') n += 8;
-                else n += 9;
-
-                if (b[n] == '"' || b[n] == '\'') n++;
-
-                var oldn = n;
-
-                while (IsCharsetNameRange(taster, b, n))
-                    n++;
-
-                var nb = new byte[n - oldn];
-                Array.Copy(b, oldn, nb, 0, n - oldn);
-                try
+                var internalEnc = Encoding.ASCII.GetString(nb);
+                text = provideText ? Encoding.GetEncoding(internalEnc).GetString(b) : null;
                 {
-                    var internalEnc = Encoding.ASCII.GetString(nb);
-                    text = provideText ? Encoding.GetEncoding(internalEnc).GetString(b) : null;
-                    {
-                        encoding = Encoding.GetEncoding(internalEnc);
-                        return true;
-                    }
+                    encoding = Encoding.GetEncoding(internalEnc);
+                    return true;
                 }
-                catch
-                {
-                    // ... doesn't recognize the name of the encoding, break.
-                    break;
-                }
+            }
+            catch
+            {
+                // ... doesn't recognize the name of the encoding, break.
+                break;
             }
         }
 
@@ -284,7 +284,7 @@ public static class FileEncoding
     /// <param name="filename">The file to analyze</param>
     /// <param name="fallbackEncoding">The fallback encoding</param>
     /// <returns>Returns the encoding by bom or the fallback</returns>
-    private static Encoding GetEncodingByBom(string filename, Encoding fallbackEncoding = null)
+    private static Encoding? GetEncodingByBom(string filename, Encoding?fallbackEncoding = null)
     {
         using var file = new FileStream(filename, FileMode.Open, FileAccess.Read);
         return GetEncodingByBom(file, fallbackEncoding ?? DefaultFallback);
@@ -296,16 +296,18 @@ public static class FileEncoding
     /// <param name="fileStream">The file stream to read bytes from</param>
     /// <param name="fallbackEncoding">The fallback encoding</param>
     /// <returns>Returns the encoding by bom or the fallback</returns>
-    private static Encoding GetEncodingByBom(FileStream fileStream, Encoding fallbackEncoding)
+    private static Encoding? GetEncodingByBom(FileStream fileStream, Encoding? fallbackEncoding)
     {
         if (fileStream == null) 
             throw new ArgumentNullException(nameof(fileStream));
             
         var bom = new byte[4];
         fileStream.Position = 0;
+        
+        // ReSharper disable once MustUseReturnValue
         fileStream.Read(bom, 0, 4);
 
-        return GetEncodingByBom( bom, fallbackEncoding, out _,false);
+        return GetEncodingByBom(bom, fallbackEncoding, out _,false);
     }
         
     /// <summary>
@@ -314,9 +316,9 @@ public static class FileEncoding
     /// <param name="bytes">File byte array</param>
     /// <param name="fallback">Fallback encoding</param>
     /// <param name="text">Text output if text should be provided</param>
-    /// <param name="provideText">Boolean value to indicate if text sould be provided</param>
+    /// <param name="provideText">Boolean value to indicate if text should be provided</param>
     /// <returns>Returns the encoding by bom or the fallback</returns>
-    private static Encoding GetEncodingByBom(byte[] bytes, Encoding fallback, out string text, bool provideText)
+    private static Encoding? GetEncodingByBom(byte[] bytes, Encoding? fallback, out string? text, bool provideText)
     {
         foreach (var bom in ByteOrderMask.List)
             if (SignatureMatch(bytes, bom.Signature))
@@ -346,7 +348,7 @@ public static class FileEncoding
     /// <param name="provideText">Flag if text should be provided to the text output</param>
     /// <returns></returns>
     private static Encoding GetEncodingAndProvideText(ByteOrderMaskInfo orderMaskInfo, byte[] bytes,
-        out string text, bool provideText)
+        out string? text, bool provideText)
     {
         text = provideText ? orderMaskInfo.Encoding.GetString(bytes, orderMaskInfo.SignatureLength(),
             bytes.Length - orderMaskInfo.SignatureLength()) : null;

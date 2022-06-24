@@ -1,23 +1,22 @@
 ﻿using System;
 using System.IO;
 
-namespace UnitTests.TestHelper
+namespace UnitTests.TestHelper;
+
+public sealed class TempFile : IDisposable
 {
-    public class TempFile : IDisposable
+    public TempFile()
     {
-        public TempFile()
-        {
-            Path = System.IO.Path.GetTempFileName();
-        }
+        Path = System.IO.Path.GetTempFileName();
+    }
 
-        public string Path { get; }
+    public string Path { get; }
 
-        public void Dispose()
+    void IDisposable.Dispose()
+    {
+        if(File.Exists(Path))
         {
-            if(File.Exists(Path))
-            {
-                File.Delete(Path);
-            }
+            File.Delete(Path);
         }
     }
 }
