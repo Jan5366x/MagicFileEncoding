@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
-        <PackageVersion>1.2.0</PackageVersion>
+        <PackageVersion>2.0.0</PackageVersion>
         <Title>Magic File Encoding</Title>
         <Authors>Jan Schwien</Authors>
         <Copyright>by Jan Schwien</Copyright>

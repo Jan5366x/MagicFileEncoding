@@ -12,6 +12,17 @@ It is strongly recommended to write unit tests for your use case to ensure the l
 ## Nuget Package
 [MagicFileEncoding at nuget.org](https://www.nuget.org/packages/MagicFileEncoding/)
 
+## Versioning & Breaking Changes
+
+> Major.Minor.Patch-Suffix
+
+* Major: **Breaking changes**
+* Minor: New features, but backwards compatible
+* Patch: Backwards compatible bug fixes only
+* -Suffix (optional): a hyphen followed by a string denoting a pre-release version
+
+See: https://docs.microsoft.com/en-us/nuget/concepts/package-versioning
+
 ## Usage
 
 #### Read a text file
