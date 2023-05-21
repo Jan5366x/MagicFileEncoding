@@ -10,6 +10,7 @@
         <PackageLicenseUrl>https://github.com/Jan5366x/MagicFileEncoding/blob/master/LICENCE.txt</PackageLicenseUrl>
         <RepositoryUrl>https://github.com/Jan5366x/MagicFileEncoding</RepositoryUrl>
         <PackageReleaseNotes></PackageReleaseNotes>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageTags>encoding, text, edifact</PackageTags>
         <Description>The Magic File Encoding lib helps to load and transform simple and closed scope char set text files (like EDIFACT).
 
@@ -27,5 +28,9 @@ It is strongly recommended to write unit tests for your use case to ensure the l
         <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
         <_Parameter1>UnitTests</_Parameter1>
         </AssemblyAttribute>
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Include="..\README.md" Pack="true" PackagePath="\"/>
     </ItemGroup>
 </Project>
