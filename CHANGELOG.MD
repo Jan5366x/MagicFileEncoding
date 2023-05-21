@@ -1,4 +1,6 @@
 ﻿## v2.0.0 - ?? ??? ????
+* Fixed that some files are read twice
+* Add support to read and analyze byte arrays
 * Switch to Net 6.0
 * Enabled nullable reference types
 * Adjust nullability in the entire solution
