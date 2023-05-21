@@ -10,15 +10,15 @@ internal static class EncodingTools
     /// <summary>
     /// Automatic transform bytes
     /// </summary>
-    /// <param name="filename">The file to analyze</param>
+    /// <param name="bytes">The byte array to analyze</param>
     /// <param name="targetEncoding">The output target encoding</param>
     /// <param name="fallbackEncoding">Fallback encoding for the input</param>
     /// <returns>Transformed byte array</returns>
-    internal static byte[] AutomaticTransformBytes(string filename, Encoding targetEncoding,
+    internal static byte[] AutomaticTransformBytes(byte[] bytes, Encoding targetEncoding,
         Encoding? fallbackEncoding = null)
-        => Encoding.Convert(FileEncoding.GetAcceptableEncoding(filename, fallbackEncoding), targetEncoding,
-            File.ReadAllBytes(filename));
-
+        => Encoding.Convert(FileEncoding.GetAcceptableEncoding(bytes, fallbackEncoding), targetEncoding,
+            bytes);
+    
     /// <summary>
     /// Function to detect the encoding for UTF-7, UTF-8/16/32 (bom, no bom, little
     /// and big endian), and local default codepage, and potentially other codepages.
@@ -28,26 +28,25 @@ internal static class EncodingTools
     /// becomes the length of the file (for maximum reliability). 'text' is simply
     /// the string with the discovered encoding applied to the file.
     /// </summary>
-    /// <param name="filename">The file to analyze</param>
+    /// <param name="bytes">Byte array to analyze</param>
     /// <param name="text">The text output</param>
     /// <param name="provideText">Flag if text should be provided to the text output</param>
     /// <param name="taster">The taster depth</param>
     /// <param name="fallbackEncoding">The fallback encoding which should be used if we have no match</param>
     /// <returns>Returns the detected encoding</returns>
-    internal static Encoding? DetectTextEncoding(string filename, out string? text, bool provideText, int taster = 0,
+    internal static Encoding? DetectTextEncoding(byte[] bytes, out string? text, bool provideText, int taster = 0,
         Encoding? fallbackEncoding = null)
     {
-        var b = File.ReadAllBytes(filename);
 
-        var encodingByBom = GetEncodingByBom(b, null, out text, provideText);
+        var encodingByBom = GetEncodingByBom(bytes, null, out text, provideText);
         if (encodingByBom != null)
             return encodingByBom;
 
         // If the code reaches here, no BOM/signature was found, so now
         // we need to 'taste' the file to see if can manually discover
         // the encoding. A high taster value is desired for UTF-8
-        if (taster == 0 || taster > b.Length)
-            taster = b.Length; // Taster size can't be bigger than the filesize obviously.
+        if (taster == 0 || taster > bytes.Length)
+            taster = bytes.Length; // Taster size can't be bigger than the filesize obviously.
 
         // Some text files are encoded in UTF8, but have no BOM/signature. Hence
         // the below manually checks for a UTF8 pattern.
@@ -58,7 +57,7 @@ internal static class EncodingTools
         var utf8 = false;
         while (i < taster - 4)
         {
-            if (b[i] <= 0x7F)
+            if (bytes[i] <= 0x7F)
             {
                 i += 1;
                 continue;
@@ -69,23 +68,23 @@ internal static class EncodingTools
             // the default codepage of the computer). Hence, there's no "utf8 = true;"
             // code unlike the next three checks.
 
-            if (b[i] >= 0xC2 && b[i] <= 0xDF && b[i + 1] >= 0x80 && b[i + 1] < 0xC0)
+            if (bytes[i] >= 0xC2 && bytes[i] <= 0xDF && bytes[i + 1] >= 0x80 && bytes[i + 1] < 0xC0)
             {
                 i += 2;
                 utf8 = true;
                 continue;
             }
 
-            if (b[i] >= 0xE0 && b[i] <= 0xF0 && b[i + 1] >= 0x80 && b[i + 1] < 0xC0 && b[i + 2] >= 0x80 &&
-                b[i + 2] < 0xC0)
+            if (bytes[i] >= 0xE0 && bytes[i] <= 0xF0 && bytes[i + 1] >= 0x80 && bytes[i + 1] < 0xC0 && bytes[i + 2] >= 0x80 &&
+                bytes[i + 2] < 0xC0)
             {
                 i += 3;
                 utf8 = true;
                 continue;
             }
 
-            if (b[i] >= 0xF0 && b[i] <= 0xF4 && b[i + 1] >= 0x80 && b[i + 1] < 0xC0 && b[i + 2] >= 0x80 &&
-                b[i + 2] < 0xC0 && b[i + 3] >= 0x80 && b[i + 3] < 0xC0)
+            if (bytes[i] >= 0xF0 && bytes[i] <= 0xF4 && bytes[i + 1] >= 0x80 && bytes[i + 1] < 0xC0 && 
+                bytes[i + 2] >= 0x80 && bytes[i + 2] < 0xC0 && bytes[i + 3] >= 0x80 && bytes[i + 3] < 0xC0)
             {
                 i += 4;
                 utf8 = true;
@@ -98,7 +97,7 @@ internal static class EncodingTools
 
         if (utf8)
         {
-            text = provideText ? Encoding.UTF8.GetString(b) : null;
+            text = provideText ? Encoding.UTF8.GetString(bytes) : null;
             return Encoding.UTF8;
         }
 
@@ -111,31 +110,31 @@ internal static class EncodingTools
 
         double count = 0;
         for (var n = 0; n < taster; n += 2)
-            if (b[n] == 0)
+            if (bytes[n] == 0)
                 count++;
         if (count / taster > threshold)
         {
-            text = provideText ? Encoding.BigEndianUnicode.GetString(b) : null;
+            text = provideText ? Encoding.BigEndianUnicode.GetString(bytes) : null;
             return Encoding.BigEndianUnicode;
         }
 
         count = 0;
         for (var n = 1; n < taster; n += 2)
-            if (b[n] == 0)
+            if (bytes[n] == 0)
                 count++;
 
         if (count / taster > threshold)
         {
             // unicode little-endian
-            text = provideText ? Encoding.Unicode.GetString(b) : null;
+            text = provideText ? Encoding.Unicode.GetString(bytes) : null;
             return Encoding.Unicode;
         }
 
-        if (LongShot(ref text, provideText, taster, b, out var encoding))
+        if (LongShot(ref text, provideText, taster, bytes, out var encoding))
             return encoding;
 
         // use the fallback encoding
-        text = provideText ? (fallbackEncoding ?? FileEncoding.DefaultFallback).GetString(b) : null;
+        text = provideText ? (fallbackEncoding ?? FileEncoding.DefaultFallback).GetString(bytes) : null;
         return fallbackEncoding ?? FileEncoding.DefaultFallback;
     }
 
@@ -146,32 +145,32 @@ internal static class EncodingTools
     /// <param name="text">The text output</param>
     /// <param name="provideText">Flag if text should be provided to the text output</param>
     /// <param name="taster">Taster depth</param>
-    /// <param name="b">The byte array</param>
+    /// <param name="bytes">The byte array</param>
     /// <param name="encoding">The encoding</param>
     /// <returns>Returns <i>true</i> if the long shot was successful</returns>
-    private static bool LongShot(ref string? text, bool provideText, int taster, byte[] b, out Encoding? encoding)
+    private static bool LongShot(ref string? text, bool provideText, int taster, byte[] bytes, out Encoding? encoding)
     {
         for (var n = 0; n < taster - 9; n++)
         {
-            if (!IsCharsetMarker(b, n) && !IsEncodingMarker(b, n))
+            if (!IsCharsetMarker(bytes, n) && !IsEncodingMarker(bytes, n))
                 continue;
 
-            if (b[n + 0] == 'c' || b[n + 0] == 'C') n += 8;
+            if (bytes[n + 0] == 'c' || bytes[n + 0] == 'C') n += 8;
             else n += 9;
 
-            if (b[n] == '"' || b[n] == '\'') n++;
+            if (bytes[n] == '"' || bytes[n] == '\'') n++;
 
             var oldN = n;
 
-            while (IsCharsetNameRange(taster, b, n))
+            while (IsCharsetNameRange(taster, bytes, n))
                 n++;
 
             var nb = new byte[n - oldN];
-            Array.Copy(b, oldN, nb, 0, n - oldN);
+            Array.Copy(bytes, oldN, nb, 0, n - oldN);
             try
             {
                 var internalEnc = Encoding.ASCII.GetString(nb);
-                text = provideText ? Encoding.GetEncoding(internalEnc).GetString(b) : null;
+                text = provideText ? Encoding.GetEncoding(internalEnc).GetString(bytes) : null;
                 {
                     encoding = Encoding.GetEncoding(internalEnc);
                     return true;
@@ -191,42 +190,42 @@ internal static class EncodingTools
     /// <summary>
     /// Is encoding marker
     /// </summary>
-    /// <param name="b">The byte array</param>
+    /// <param name="bytes">The byte array</param>
     /// <param name="n">Location</param>
     /// <returns>Returns <i>true</i> if encoding marker was found</returns>
-    private static bool IsEncodingMarker(byte[] b, int n)
+    private static bool IsEncodingMarker(byte[] bytes, int n)
     {
-        return ((b[n + 0] == 'e' || b[n + 0] == 'E') && (b[n + 1] == 'n' || b[n + 1] == 'N') &&
-                (b[n + 2] == 'c' || b[n + 2] == 'C') && (b[n + 3] == 'o' || b[n + 3] == 'O') &&
-                (b[n + 4] == 'd' || b[n + 4] == 'D') && (b[n + 5] == 'i' || b[n + 5] == 'I') &&
-                (b[n + 6] == 'n' || b[n + 6] == 'N') && (b[n + 7] == 'g' || b[n + 7] == 'G') && b[n + 8] == '=');
+        return ((bytes[n + 0] == 'e' || bytes[n + 0] == 'E') && (bytes[n + 1] == 'n' || bytes[n + 1] == 'N') &&
+                (bytes[n + 2] == 'c' || bytes[n + 2] == 'C') && (bytes[n + 3] == 'o' || bytes[n + 3] == 'O') &&
+                (bytes[n + 4] == 'd' || bytes[n + 4] == 'D') && (bytes[n + 5] == 'i' || bytes[n + 5] == 'I') &&
+                (bytes[n + 6] == 'n' || bytes[n + 6] == 'N') && (bytes[n + 7] == 'g' || bytes[n + 7] == 'G') && bytes[n + 8] == '=');
     }
 
     /// <summary>
     /// Is charset marker
     /// </summary>
-    /// <param name="b">The byte array</param>
+    /// <param name="bytes">The byte array</param>
     /// <param name="n">Location</param>
     /// <returns>Returns <i>true</i> if charset marker was found</returns>
-    private static bool IsCharsetMarker(byte[] b, int n)
+    private static bool IsCharsetMarker(byte[] bytes, int n)
     {
-        return ((b[n + 0] == 'c' || b[n + 0] == 'C') && (b[n + 1] == 'h' || b[n + 1] == 'H') &&
-                (b[n + 2] == 'a' || b[n + 2] == 'A') && (b[n + 3] == 'r' || b[n + 3] == 'R') &&
-                (b[n + 4] == 's' || b[n + 4] == 'S') && (b[n + 5] == 'e' || b[n + 5] == 'E') &&
-                (b[n + 6] == 't' || b[n + 6] == 'T') && b[n + 7] == '=');
+        return ((bytes[n + 0] == 'c' || bytes[n + 0] == 'C') && (bytes[n + 1] == 'h' || bytes[n + 1] == 'H') &&
+                (bytes[n + 2] == 'a' || bytes[n + 2] == 'A') && (bytes[n + 3] == 'r' || bytes[n + 3] == 'R') &&
+                (bytes[n + 4] == 's' || bytes[n + 4] == 'S') && (bytes[n + 5] == 'e' || bytes[n + 5] == 'E') &&
+                (bytes[n + 6] == 't' || bytes[n + 6] == 'T') && bytes[n + 7] == '=');
     }
 
     /// <summary>
     /// Is charset name in range
     /// </summary>
     /// <param name="taster">The byte array</param>
-    /// <param name="b">The byte array</param>
+    /// <param name="bytes">The byte array</param>
     /// <param name="n">Location</param>
     /// <returns>Returns <i>true</i> if charset name in range</returns>
-    private static bool IsCharsetNameRange(int taster, byte[] b, int n)
+    private static bool IsCharsetNameRange(int taster, byte[] bytes, int n)
     {
-        return n < taster && (b[n] == '_' || b[n] == '-' || b[n] >= '0' && b[n] <= '9'
-                              || b[n] >= 'a' && b[n] <= 'z' || b[n] >= 'A' && b[n] <= 'Z');
+        return n < taster && (bytes[n] == '_' || bytes[n] == '-' || bytes[n] >= '0' && bytes[n] <= '9'
+                              || bytes[n] >= 'a' && bytes[n] <= 'z' || bytes[n] >= 'A' && bytes[n] <= 'Z');
     }
 
     /// <summary>
