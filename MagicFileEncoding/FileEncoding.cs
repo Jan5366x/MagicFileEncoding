@@ -44,15 +44,6 @@ public static class FileEncoding
         => ReadAllBytes(File.ReadAllBytes(filename));
 
     /// <summary>
-    /// Automatic detect acceptable encoding and read all text from a given byte arrry and transform it into
-    /// Unicode UTF16 encoding
-    /// </summary>
-    /// <param name="bytes">The file to read text</param>
-    /// <returns>Returns the text</returns>
-    public static string ReadAllBytes(byte[] bytes) 
-        => Encoding.Unicode.GetString(AutomaticTransformBytes(bytes, Encoding.Unicode));
-
-    /// <summary>
     /// Automatic detect acceptable encoding and read all text from a given file and transform it into
     /// a given target encoding
     /// </summary>
@@ -62,7 +53,16 @@ public static class FileEncoding
     /// <returns>Returns the text</returns>
     public static string ReadAllText(string filename, Encoding targetEncoding, Encoding? fallbackEncoding = null)
         => ReadAllBytes(File.ReadAllBytes(filename), targetEncoding, fallbackEncoding);
-
+    
+    /// <summary>
+    /// Automatic detect acceptable encoding and read all text from a given byte arrry and transform it into
+    /// Unicode UTF16 encoding
+    /// </summary>
+    /// <param name="bytes">The file to read text</param>
+    /// <returns>Returns the text</returns>
+    public static string ReadAllBytes(byte[] bytes) 
+        => Encoding.Unicode.GetString(AutomaticTransformBytes(bytes, Encoding.Unicode));
+    
     /// <summary>
     /// Automatic detect acceptable encoding and read all text from a given file and transform it into
     /// a given target encoding
@@ -74,7 +74,7 @@ public static class FileEncoding
     public static string ReadAllBytes(byte[] bytes, Encoding targetEncoding, Encoding? fallbackEncoding = null)
         => targetEncoding
             .GetString(AutomaticTransformBytes(bytes, targetEncoding, fallbackEncoding))
-            .Trim(new[]{'\uFEFF'});
+            .Trim('\uFEFF');
     
     /// <summary>
     /// Write all text to a given file in a specific encoding
