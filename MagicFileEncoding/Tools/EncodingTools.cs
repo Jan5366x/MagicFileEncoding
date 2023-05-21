@@ -301,7 +301,7 @@ internal static class EncodingTools
         out string? text, bool provideText)
     {
         if (orderMaskInfo.Encoding == null)
-            throw new ArgumentNullException(nameof(orderMaskInfo.Encoding));
+            throw new ArgumentException("Order mask encoding is null!");
         
         text = provideText
             ? orderMaskInfo.Encoding.GetString(bytes, orderMaskInfo.SignatureLength(),
