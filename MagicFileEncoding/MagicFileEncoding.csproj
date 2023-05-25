@@ -1,8 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>netcoreapp3.1</TargetFramework>
-        <PackageVersion>1.1.1</PackageVersion>
+        <TargetFramework>net6.0</TargetFramework>
+        <PackageVersion>2.0.0</PackageVersion>
         <Title>Magic File Encoding</Title>
         <Authors>Jan Schwien</Authors>
         <Copyright>by Jan Schwien</Copyright>
@@ -10,12 +10,27 @@
         <PackageLicenseUrl>https://github.com/Jan5366x/MagicFileEncoding/blob/master/LICENCE.txt</PackageLicenseUrl>
         <RepositoryUrl>https://github.com/Jan5366x/MagicFileEncoding</RepositoryUrl>
         <PackageReleaseNotes></PackageReleaseNotes>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageTags>encoding, text, edifact</PackageTags>
         <Description>The Magic File Encoding lib helps to load and transform simple and closed scope char set text files (like EDIFACT).
 
 Be aware of possible transformation issues if the target encoding is simpler than the source encoding.
 
 It is strongly recommended to write unit tests for your use case to ensure the load and transformation works as expected.</Description>
+        <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <PropertyGroup>
+        <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+        <_Parameter1>UnitTests</_Parameter1>
+        </AssemblyAttribute>
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Include="..\README.md" Pack="true" PackagePath="\"/>
+    </ItemGroup>
 </Project>
