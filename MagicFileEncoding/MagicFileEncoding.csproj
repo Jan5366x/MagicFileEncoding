@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
-        <PackageVersion>2.0.0</PackageVersion>
+        <PackageVersion>2.0.1</PackageVersion>
         <Title>Magic File Encoding</Title>
         <Authors>Jan Schwien</Authors>
         <Copyright>by Jan Schwien</Copyright>
@@ -31,6 +31,6 @@ It is strongly recommended to write unit tests for your use case to ensure the l
     </ItemGroup>
 
     <ItemGroup>
-        <None Include="..\README.md" Pack="true" PackagePath="\"/>
+        <None Include="..\README.md" Pack="true" PackagePath="\" />
     </ItemGroup>
 </Project>
