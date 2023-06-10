@@ -25,21 +25,33 @@ enabling adaptation to different encoding needs like UTF-8 fallbacks.
 
 ## Usage
 
+### Filesystem
 #### Read a text file
 ```csharp
-var text = FileEncoding.ReadAllText(filePath);
+string text = FileEncoding.ReadAllText(filePath);
 // or 
-var text = FileEncoding.ReadAllText(filePath, Encoding.Unicode);
+string text = FileEncoding.ReadAllText(filePath, Encoding.Unicode);
 ```
 #### Write a text file
 ```csharp
 FileEncoding.WriteAllText(tmpFile.Path, text, Encoding.UTF8);
 ```
-#### Just detect suitable encoding
+#### Just detect suitable encoding for a given file
 ```csharp
-var encoding = FileEncoding.GetAcceptableEncoding(filename);
+Encoding encoding = FileEncoding.GetAcceptableEncoding(filename);
+```
+### Byte Array
+#### Byte array to string
+```csharp
+string text = FileEncoding.ReadAllBytes(byteArray);
+// Or
+string text = FileEncoding.ReadAllBytes(byteArray, Encoding.Unicode);
 ```
 
+#### Just detect suitable encoding for a given byte array
+```csharp
+Encoding encoding = FileEncoding.GetAcceptableEncoding(byteArray);
+```
 ## Nuget Package
 [MagicFileEncoding at nuget.org](https://www.nuget.org/packages/MagicFileEncoding/)
 
