@@ -1,4 +1,8 @@
-﻿## v2.0.0 - ?? ??? ????
+﻿## v2.0.1 - 10 Jun 2023
+* Deploy as release build
+* Update readme file
+
+## v2.0.0 - 25 May 2023
 * Fixed that some files are read twice
 * Add support to read and analyze byte arrays
 * Switch to Net 6.0
