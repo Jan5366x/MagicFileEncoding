@@ -5,7 +5,7 @@
 ![GitHub](https://img.shields.io/github/license/jan5366x/MagicFileEncoding)
 
 The Magic File Encoding Library is a powerful tool designed to assist you in loading and transforming simple and closed scope
-character set text files. Whether you're working with EDIFACT files or similar text formats, this library provides a
+character set text files. Whether you're working with txt, xml, json, EDIFACT or similar text formats, this library provides a
 comprehensive solution to handle various encoding scenarios effortlessly.
 
 ## Nuget Package
