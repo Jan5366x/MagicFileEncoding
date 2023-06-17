@@ -1,4 +1,8 @@
-﻿## Upcoming
+﻿## Upcoming v3.0.0
+* Update dependencies
+* Switch to .Net 8.0
+
+## Upcoming
 * Update readme file with code examples 
 * 
 ## v2.0.1 - 10 Jun 2023
