@@ -55,7 +55,7 @@ public static class FileEncoding
         => ReadAllBytes(File.ReadAllBytes(filename), targetEncoding, fallbackEncoding);
     
     /// <summary>
-    /// Automatic detect acceptable encoding and read all text from a given byte arrry and transform it into
+    /// Automatic detect acceptable encoding and read all text from a given byte array and transform it into
     /// Unicode UTF16 encoding
     /// </summary>
     /// <param name="bytes">The file to read text</param>

@@ -18,6 +18,7 @@ Be aware of possible transformation issues if the target encoding is simpler tha
 
 It is strongly recommended to write unit tests for your use case to ensure the load and transformation works as expected.</Description>
         <Nullable>enable</Nullable>
+        <LangVersion>11</LangVersion>
     </PropertyGroup>
 
     <PropertyGroup>

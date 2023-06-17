@@ -3,8 +3,10 @@ using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
 #pragma warning disable SYSLIB0001
+
 namespace MagicFileEncoding;
 
+[SuppressMessage("ReSharper", "UseUtf8StringLiteral")]
 [SuppressMessage("ReSharper", "InconsistentNaming")]
 [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
 public static class ByteOrderMask
