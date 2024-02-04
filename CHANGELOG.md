@@ -3,6 +3,7 @@
 * Updated dependencies
 * Improved error handling for empty and whitespace path
 * Readme file now includes code examples
+* Removed unused internal code
 
 ## v2.0.1 - 10 Jun 2023
 * Deploy as release build
