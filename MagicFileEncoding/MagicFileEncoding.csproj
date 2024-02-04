@@ -11,7 +11,7 @@
         <RepositoryUrl>https://github.com/Jan5366x/MagicFileEncoding</RepositoryUrl>
         <PackageReleaseNotes></PackageReleaseNotes>
         <PackageReadmeFile>README.md</PackageReadmeFile>
-        <PackageTags>encoding, text, edifact</PackageTags>
+        <PackageTags>encoding, text, edifact, utf8</PackageTags>
         <Description>The Magic File Encoding lib helps to load and transform simple and closed scope char set text files (like EDIFACT).
 
 Be aware of possible transformation issues if the target encoding is simpler than the source encoding.
@@ -19,6 +19,7 @@ Be aware of possible transformation issues if the target encoding is simpler tha
 It is strongly recommended to write unit tests for your use case to ensure the load and transformation works as expected.</Description>
         <Nullable>enable</Nullable>
         <LangVersion>11</LangVersion>
+        <AssemblyVersion>3.0.0</AssemblyVersion>
     </PropertyGroup>
 
     <PropertyGroup>
