@@ -1,8 +1,8 @@
-﻿## Upcoming v3.0.0
-* Update dependencies
+﻿## v3.0.0 - 5 Feb 2024
 * Switch to .Net 8.0
+* Updated dependencies
 * Improved error handling for empty and whitespace path
-* Update readme file with code examples
+* Readme file now includes code examples
 
 ## v2.0.1 - 10 Jun 2023
 * Deploy as release build
