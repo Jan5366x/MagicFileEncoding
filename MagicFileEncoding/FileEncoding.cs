@@ -95,12 +95,8 @@ public static class FileEncoding
     /// <exception cref="ArgumentException">If a empty path is supplied</exception>
     public static void Write(string path, Encoding? targetEncoding, Action<StreamWriter> writerAction)
     {
-        if (path == null)
-            throw new ArgumentNullException(nameof(path));
-        if (path.Trim().Length == 0)
-            throw new ArgumentException("Can't write file because path is empty!", nameof(path));
-        if (targetEncoding == null)
-            throw new ArgumentNullException(nameof(targetEncoding));
+        ArgumentException.ThrowIfNullOrWhiteSpace(path);
+        ArgumentNullException.ThrowIfNull(targetEncoding);
         
         using var sw = new StreamWriter(path, false, targetEncoding);
         writerAction.Invoke(sw);

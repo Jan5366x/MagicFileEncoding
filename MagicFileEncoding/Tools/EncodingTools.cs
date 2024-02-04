@@ -195,10 +195,10 @@ internal static class EncodingTools
     /// <returns>Returns <i>true</i> if encoding marker was found</returns>
     private static bool IsEncodingMarker(byte[] bytes, int n)
     {
-        return ((bytes[n + 0] == 'e' || bytes[n + 0] == 'E') && (bytes[n + 1] == 'n' || bytes[n + 1] == 'N') &&
-                (bytes[n + 2] == 'c' || bytes[n + 2] == 'C') && (bytes[n + 3] == 'o' || bytes[n + 3] == 'O') &&
-                (bytes[n + 4] == 'd' || bytes[n + 4] == 'D') && (bytes[n + 5] == 'i' || bytes[n + 5] == 'I') &&
-                (bytes[n + 6] == 'n' || bytes[n + 6] == 'N') && (bytes[n + 7] == 'g' || bytes[n + 7] == 'G') && bytes[n + 8] == '=');
+        return (bytes[n + 0] == 'e' || bytes[n + 0] == 'E') && (bytes[n + 1] == 'n' || bytes[n + 1] == 'N') && 
+               (bytes[n + 2] == 'c' || bytes[n + 2] == 'C') && (bytes[n + 3] == 'o' || bytes[n + 3] == 'O') &&
+               (bytes[n + 4] == 'd' || bytes[n + 4] == 'D') && (bytes[n + 5] == 'i' || bytes[n + 5] == 'I') &&
+               (bytes[n + 6] == 'n' || bytes[n + 6] == 'N') && (bytes[n + 7] == 'g' || bytes[n + 7] == 'G') && bytes[n + 8] == '=';
     }
 
     /// <summary>
@@ -209,10 +209,10 @@ internal static class EncodingTools
     /// <returns>Returns <i>true</i> if charset marker was found</returns>
     private static bool IsCharsetMarker(byte[] bytes, int n)
     {
-        return ((bytes[n + 0] == 'c' || bytes[n + 0] == 'C') && (bytes[n + 1] == 'h' || bytes[n + 1] == 'H') &&
-                (bytes[n + 2] == 'a' || bytes[n + 2] == 'A') && (bytes[n + 3] == 'r' || bytes[n + 3] == 'R') &&
-                (bytes[n + 4] == 's' || bytes[n + 4] == 'S') && (bytes[n + 5] == 'e' || bytes[n + 5] == 'E') &&
-                (bytes[n + 6] == 't' || bytes[n + 6] == 'T') && bytes[n + 7] == '=');
+        return (bytes[n + 0] == 'c' || bytes[n + 0] == 'C') && (bytes[n + 1] == 'h' || bytes[n + 1] == 'H') &&
+               (bytes[n + 2] == 'a' || bytes[n + 2] == 'A') && (bytes[n + 3] == 'r' || bytes[n + 3] == 'R') &&
+               (bytes[n + 4] == 's' || bytes[n + 4] == 'S') && (bytes[n + 5] == 'e' || bytes[n + 5] == 'E') &&
+               (bytes[n + 6] == 't' || bytes[n + 6] == 'T') && bytes[n + 7] == '=';
     }
 
     /// <summary>
@@ -248,8 +248,7 @@ internal static class EncodingTools
     /// <returns>Returns the encoding by bom or the fallback</returns>
     private static Encoding? GetEncodingByBom(FileStream fileStream, Encoding? fallbackEncoding)
     {
-        if (fileStream == null)
-            throw new ArgumentNullException(nameof(fileStream));
+        ArgumentNullException.ThrowIfNull(fileStream);
 
         var bom = new byte[4];
         fileStream.Position = 0;
@@ -271,8 +270,12 @@ internal static class EncodingTools
     private static Encoding? GetEncodingByBom(byte[] bytes, Encoding? fallback, out string? text, bool provideText)
     {
         foreach (var bom in ByteOrderMask.List)
+        {
             if (SignatureMatch(bytes, bom.Signature))
+            {
                 return GetEncodingAndProvideText(bom, bytes, out text, provideText);
+            }
+        }
 
         text = provideText ? fallback?.GetString(bytes) : null;
 
@@ -300,9 +303,11 @@ internal static class EncodingTools
     private static Encoding GetEncodingAndProvideText(ByteOrderMaskInfo orderMaskInfo, byte[] bytes,
         out string? text, bool provideText)
     {
-        if (orderMaskInfo.Encoding == null)
+        if (orderMaskInfo?.Encoding == null)
+        {
             throw new ArgumentException("Order mask encoding is null!");
-        
+        }
+
         text = provideText
             ? orderMaskInfo.Encoding.GetString(bytes, orderMaskInfo.SignatureLength(),
                 bytes.Length - orderMaskInfo.SignatureLength())
@@ -323,7 +328,9 @@ internal static class EncodingTools
     internal static void ValidateEncodingSecurity(Encoding encoding)
     {
         if (Equals(encoding, Encoding.UTF7))
+        {
             throw new EncodingSecurityException("SYSLIB0001: The UTF-7-encoding is not safe");
+        }
     }
 #pragma warning restore SYSLIB0001
 }
