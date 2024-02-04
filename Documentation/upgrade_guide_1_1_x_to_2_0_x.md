@@ -1,4 +1,6 @@
-﻿#### Write a text file
+﻿# Upgrade Guide v1.1.* to v2.0.*
+
+#### Write a text file
 
 Last two arguments are swapped
 
