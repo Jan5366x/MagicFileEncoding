@@ -115,6 +115,8 @@ public class ReadmeExampleTest
         // Arrange
         using var tmpFile = new TempFile();
         var filePath = tmpFile.Path;
+        var expectedResult = "Line 1" + Environment.NewLine + "Line 2" + Environment.NewLine + "Line 3" +
+                             Environment.NewLine;
         
         // Act
         // -> Readme Code
@@ -132,7 +134,7 @@ public class ReadmeExampleTest
         // <-
         
         // Assert
-        Assert.That(FileEncoding.ReadAllText(filePath, Encoding.UTF8), Is.EqualTo("Line 1\nLine 2\nLine 3\n"));
+        Assert.That(FileEncoding.ReadAllText(filePath, Encoding.UTF8), Is.EqualTo(expectedResult));
     }
     
     /// <summary>
