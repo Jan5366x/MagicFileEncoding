@@ -10,8 +10,6 @@ namespace UnitTests;
 [TestFixture]
 public class ReadmeExampleTest
 {
-    // TODO adjust files and assert result
-    
     /// <summary>
     /// Example 1: Getting the acceptable encoding of a file
     /// </summary>

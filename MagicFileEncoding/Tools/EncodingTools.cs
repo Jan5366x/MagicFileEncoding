@@ -53,49 +53,9 @@ internal static class EncodingTools
         // For the below, false positives should be exceedingly rare (and would
         // be either slightly malformed UTF-8 (which would suit our purposes
         // anyway) or 8-bit extended ASCII/UTF-16/32 at a vanishingly long shot).
-        var i = 0;
-        var utf8 = false;
-        while (i < taster - 4)
-        {
-            if (bytes[i] <= 0x7F)
-            {
-                i += 1;
-                continue;
-            }
+        
 
-            // If all characters are below 0x80, then it is valid UTF8,
-            // but UTF8 is not 'required' (and therefore the text is more desirable to be treated as
-            // the default codepage of the computer). Hence, there's no "utf8 = true;"
-            // code unlike the next three checks.
-
-            if (bytes[i] >= 0xC2 && bytes[i] <= 0xDF && bytes[i + 1] >= 0x80 && bytes[i + 1] < 0xC0)
-            {
-                i += 2;
-                utf8 = true;
-                continue;
-            }
-
-            if (bytes[i] >= 0xE0 && bytes[i] <= 0xF0 && bytes[i + 1] >= 0x80 && bytes[i + 1] < 0xC0 && bytes[i + 2] >= 0x80 &&
-                bytes[i + 2] < 0xC0)
-            {
-                i += 3;
-                utf8 = true;
-                continue;
-            }
-
-            if (bytes[i] >= 0xF0 && bytes[i] <= 0xF4 && bytes[i + 1] >= 0x80 && bytes[i + 1] < 0xC0 && 
-                bytes[i + 2] >= 0x80 && bytes[i + 2] < 0xC0 && bytes[i + 3] >= 0x80 && bytes[i + 3] < 0xC0)
-            {
-                i += 4;
-                utf8 = true;
-                continue;
-            }
-
-            utf8 = false;
-            break;
-        }
-
-        if (utf8)
+        if (CheckForUtf8(bytes, taster))
         {
             text = provideText ? Encoding.UTF8.GetString(bytes) : null;
             return Encoding.UTF8;
@@ -138,6 +98,53 @@ internal static class EncodingTools
         return fallbackEncoding ?? FileEncoding.DefaultFallback;
     }
 
+    private static bool CheckForUtf8(byte[] bytes, int taster)
+    {
+        var utf8 = false;
+        var i = 0;
+        while (i < taster - 4)
+        {
+            if (bytes[i] <= 0x7F)
+            {
+                i += 1;
+                continue;
+            }
+
+            // If all characters are below 0x80, then it is valid UTF8,
+            // but UTF8 is not 'required' (and therefore the text is more desirable to be treated as
+            // the default codepage of the computer). Hence, there's no "utf8 = true;"
+            // code unlike the next three checks.
+
+            if (bytes[i] >= 0xC2 && bytes[i] <= 0xDF && bytes[i + 1] >= 0x80 && bytes[i + 1] < 0xC0)
+            {
+                i += 2;
+                utf8 = true;
+                continue;
+            }
+
+            if (bytes[i] >= 0xE0 && bytes[i] <= 0xF0 && bytes[i + 1] >= 0x80 && bytes[i + 1] < 0xC0 && bytes[i + 2] >= 0x80 &&
+                bytes[i + 2] < 0xC0)
+            {
+                i += 3;
+                utf8 = true;
+                continue;
+            }
+
+            if (bytes[i] >= 0xF0 && bytes[i] <= 0xF4 && bytes[i + 1] >= 0x80 && bytes[i + 1] < 0xC0 && 
+                bytes[i + 2] >= 0x80 && bytes[i + 2] < 0xC0 && bytes[i + 3] >= 0x80 && bytes[i + 3] < 0xC0)
+            {
+                i += 4;
+                utf8 = true;
+                continue;
+            }
+
+            utf8 = false;
+            break;
+        }
+
+        return utf8;
+    }
+
     /// <summary>
     /// A long shot - let's see if we can find "charset=xyz" or
     /// "encoding=xyz" to identify the encoding:
@@ -153,17 +160,30 @@ internal static class EncodingTools
         for (var n = 0; n < taster - 9; n++)
         {
             if (!IsCharsetMarker(bytes, n) && !IsEncodingMarker(bytes, n))
+            {
                 continue;
+            }
 
-            if (bytes[n + 0] == 'c' || bytes[n + 0] == 'C') n += 8;
-            else n += 9;
+            if (bytes[n + 0] == 'c' || bytes[n + 0] == 'C')
+            {
+                n += 8;
+            }
+            else
+            {
+                n += 9;
+            }
 
-            if (bytes[n] == '"' || bytes[n] == '\'') n++;
+            if (bytes[n] == '"' || bytes[n] == '\'')
+            {
+                n++;
+            }
 
             var oldN = n;
 
             while (IsCharsetNameRange(taster, bytes, n))
+            {
                 n++;
+            }
 
             var nb = new byte[n - oldN];
             Array.Copy(bytes, oldN, nb, 0, n - oldN);
@@ -171,10 +191,9 @@ internal static class EncodingTools
             {
                 var internalEnc = Encoding.ASCII.GetString(nb);
                 text = provideText ? Encoding.GetEncoding(internalEnc).GetString(bytes) : null;
-                {
-                    encoding = Encoding.GetEncoding(internalEnc);
-                    return true;
-                }
+                
+                encoding = Encoding.GetEncoding(internalEnc);
+                return true;
             }
             catch
             {
