@@ -11,6 +11,10 @@ comprehensive solution to handle various encoding scenarios effortlessly.
 ## Nuget Package
 [MagicFileEncoding at nuget.org](https://www.nuget.org/packages/MagicFileEncoding/)
 
+## .Net Version
+- **.Net 8:** Magic File Encoding **3.0.0 and newer**
+- **.Net 6:** Magic File Encoding **2.0.1 and older**
+
 ## Transformation Considerations
 When performing encoding transformations, it is important to be mindful of potential issues
 that may arise if the target encoding is simpler than the source encoding. 
