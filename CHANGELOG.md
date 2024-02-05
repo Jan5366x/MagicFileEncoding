@@ -1,4 +1,7 @@
-﻿## v3.0.0 - 5 Feb 2024
+﻿## v3.0.1
+* Fix code example 7 and 8 in readme 
+
+## v3.0.0 - 5 Feb 2024
 * Switch to .Net 8.0
 * Updated dependencies
 * Improved error handling for empty and whitespace path

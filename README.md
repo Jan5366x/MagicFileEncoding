@@ -4,7 +4,7 @@
 [![Actions Status](https://github.com/Jan5366x/MagicFileEncoding/workflows/Build%20and%20Test/badge.svg)](https://github.com/Jan5366x/MagicFileEncoding/actions)
 ![GitHub](https://img.shields.io/github/license/jan5366x/MagicFileEncoding)
 
-The Magic File Encoding Library is a powerful tool designed to assist you in loading and transforming simple and closed scope
+The Magic File Encoding Library is designed to assist you in loading and transforming simple and closed scope
 character set text files. Whether you're working with txt, xml, json, EDIFACT or similar text formats, this library provides a
 comprehensive solution to handle various encoding scenarios effortlessly.
 
@@ -13,7 +13,7 @@ comprehensive solution to handle various encoding scenarios effortlessly.
 
 ## .Net Version
 - **.Net 8:** Magic File Encoding **3.0.0 and newer**
-- **.Net 6:** Magic File Encoding **2.0.1 and older**
+- **.Net 6:** Magic File Encoding **2.0.1**
 
 ## Transformation Considerations
 When performing encoding transformations, it is important to be mindful of potential issues
@@ -100,7 +100,7 @@ Console.WriteLine("Acceptable encoding: " + acceptableEncoding.EncodingName);
 ```csharp
 byte[] bytes = File.ReadAllBytes("example.txt");
 
-string text = FileEncoding.ReadAllText(bytes);
+string text = FileEncoding.ReadAllBytes(bytes);
 Console.WriteLine("Text: " + text);
 ```
 
@@ -110,7 +110,7 @@ byte[] bytes = File.ReadAllBytes("example.txt");
 Encoding targetEncoding = Encoding.UTF8;
 Encoding fallbackEncoding = Encoding.GetEncoding("ISO-8859-1");
 
-string text = FileEncoding.ReadAllText(bytes, targetEncoding, fallbackEncoding);
+string text = FileEncoding.ReadAllBytes(bytes, targetEncoding, fallbackEncoding);
 Console.WriteLine("Text: " + text);
 ```
 
