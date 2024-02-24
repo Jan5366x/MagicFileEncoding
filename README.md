@@ -4,7 +4,7 @@
 [![Actions Status](https://github.com/Jan5366x/MagicFileEncoding/workflows/Build%20and%20Test/badge.svg)](https://github.com/Jan5366x/MagicFileEncoding/actions)
 ![GitHub](https://img.shields.io/github/license/jan5366x/MagicFileEncoding)
 
-The Magic File Encoding Library is a powerful tool designed to assist you in loading and transforming simple and closed scope
+The Magic File Encoding Library is designed to assist you in loading and transforming simple and closed scope
 character set text files. Whether you're working with txt, xml, json, EDIFACT or similar text formats, this library provides a
 comprehensive solution to handle various encoding scenarios effortlessly.
 
@@ -13,7 +13,7 @@ comprehensive solution to handle various encoding scenarios effortlessly.
 
 ## .Net Version
 - **.Net 8:** Magic File Encoding **3.0.0 and newer**
-- **.Net 6:** Magic File Encoding **2.0.1 and older**
+- **.Net 6:** Magic File Encoding **2.0.1**
 
 ## Transformation Considerations
 When performing encoding transformations, it is important to be mindful of potential issues
@@ -36,47 +36,48 @@ Here are some code examples demonstrating the usage of the code library:
 ### File System
 ### Example 1: Getting the acceptable encoding of a file
 ```csharp
-string filename = "example.txt";
+string filePath = "~/example.txt";
 Encoding fallbackEncoding = Encoding.UTF8;
 
-Encoding acceptableEncoding = FileEncoding.GetAcceptableEncoding(filename, fallbackEncoding);
+Encoding acceptableEncoding = FileEncoding.GetAcceptableEncoding(filePath, fallbackEncoding);
+
 Console.WriteLine("Acceptable encoding: " + acceptableEncoding.EncodingName);
 ```
 
 ### Example 2: Reading all text from a file using automatic encoding detection
 ```csharp
-string filename = "example.txt";
+string filePath = "~/example.txt";
 
-string text = FileEncoding.ReadAllText(filename);
-Console.WriteLine("Text: " + text);
+string text = FileEncoding.ReadAllText(filePath);
+ Console.WriteLine("Text: " + text);
 ```
 
 ### Example 3: Reading all text from a file and transforming it into a target encoding
 ```csharp
-string filename = "example.txt";
+string filePath = "~/example.txt";
 Encoding targetEncoding = Encoding.UTF8;
 Encoding fallbackEncoding = Encoding.GetEncoding("ISO-8859-1");
 
-string text = FileEncoding.ReadAllText(filename, targetEncoding, fallbackEncoding);
+string text = FileEncoding.ReadAllText(filePath, targetEncoding, fallbackEncoding);
 Console.WriteLine("Text: " + text);
 ```
 
 ### Example 4: Writing text to a file in a specific encoding
 ```csharp
-string path = "output.txt";
-Encoding targetEncoding = Encoding.UTF8;
-string text = "Hello, world!";
+string filePath = "~/output.txt";
+Encoding targetEncoding = Encoding.Unicode;
+string text = "\u2387 Hello, world!";
 
-FileEncoding.WriteAllText(path, targetEncoding, text);
+FileEncoding.WriteAllText(filePath, targetEncoding, text);
 Console.WriteLine("Text written to file.");
 ```
 
 ### Example 5: Providing writer access to a file in a specific encoding
 ```csharp
-string path = "output.txt";
+string filePath = "~/output.txt";
 Encoding targetEncoding = Encoding.UTF8;
 
-FileEncoding.Write(path, targetEncoding, writer =>
+FileEncoding.Write(filePath, targetEncoding, writer =>
 {
     writer.WriteLine("Line 1");
     writer.WriteLine("Line 2");
@@ -89,7 +90,8 @@ Console.WriteLine("Text written to file.");
 
 ### Example 6: Getting the acceptable encoding of a byte array
 ```csharp
-byte[] bytes = File.ReadAllBytes("example.txt");
+string filePath = "~/example.txt";
+byte[] bytes = File.ReadAllBytes(filePath);
 Encoding fallbackEncoding = Encoding.UTF8;
 
 Encoding acceptableEncoding = FileEncoding.GetAcceptableEncoding(bytes, fallbackEncoding);
@@ -98,19 +100,21 @@ Console.WriteLine("Acceptable encoding: " + acceptableEncoding.EncodingName);
 
 ### Example 7: Reading all text from a byte array using automatic encoding detection
 ```csharp
-byte[] bytes = File.ReadAllBytes("example.txt");
+string filePath = "~/example.txt";
+byte[] bytes = File.ReadAllBytes(filePath);
 
-string text = FileEncoding.ReadAllText(bytes);
+string text = FileEncoding.ReadAllBytes(bytes);
 Console.WriteLine("Text: " + text);
 ```
 
 ### Example 8: Reading all text from a byte array and transforming it into a target encoding
 ```csharp
-byte[] bytes = File.ReadAllBytes("example.txt");
+string filePath = "~/example.txt";
+byte[] bytes = File.ReadAllBytes(filePath);
 Encoding targetEncoding = Encoding.UTF8;
 Encoding fallbackEncoding = Encoding.GetEncoding("ISO-8859-1");
 
-string text = FileEncoding.ReadAllText(bytes, targetEncoding, fallbackEncoding);
+string text = FileEncoding.ReadAllBytes(bytes, targetEncoding, fallbackEncoding);
 Console.WriteLine("Text: " + text);
 ```
 
