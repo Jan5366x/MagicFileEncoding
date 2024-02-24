@@ -90,6 +90,7 @@ Console.WriteLine("Text written to file.");
 
 ### Example 6: Getting the acceptable encoding of a byte array
 ```csharp
+string filePath = "~/example.txt";
 byte[] bytes = File.ReadAllBytes(filePath);
 Encoding fallbackEncoding = Encoding.UTF8;
 
