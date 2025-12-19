@@ -1,4 +1,4 @@
-﻿## v4.0.0
+﻿## v4.0.0 - 19 Dez 2025
 * Switch to .Net 10.0
 * Switch to C# 14
 * Code refactoring
