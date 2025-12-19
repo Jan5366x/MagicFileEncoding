@@ -1,6 +1,8 @@
 ﻿## v4.0.0
 * Switch to .Net 10.0
+* Code refactoring
 * Fix code example 7 and 8 in readme
+* Add tests for readme code examples
 * Adjust readme code example to use filePath instead of filename or path
 * Suppress warnings CA2022 and S2674 due to expected dynamic array length
 
