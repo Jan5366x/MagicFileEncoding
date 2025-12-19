@@ -24,9 +24,9 @@ public static class ByteOrderMask
     public static readonly ByteOrderMaskInfo UTF7
         = new (Encoding.UTF7, 0x2b, 0x2f, 0x76);
         
-    public static readonly List<ByteOrderMaskInfo> List = new ()
+    public static readonly IList<ByteOrderMaskInfo> List = new List<ByteOrderMaskInfo>()
     {
         UTF32BE, UTF32, UTF16BE, UTF16, UTF8, UTF7
-    };
+    }.AsReadOnly();
 }
 #pragma warning restore SYSLIB0001

@@ -12,7 +12,8 @@ comprehensive solution to handle various encoding scenarios effortlessly.
 [MagicFileEncoding at nuget.org](https://www.nuget.org/packages/MagicFileEncoding/)
 
 ## .Net Version
-- **.Net 8:** Magic File Encoding **3.0.0 and newer**
+- **.Net 10:** Magic File Encoding **4.0.0 and newer**
+- **.Net 8:** Magic File Encoding **3.0.0**
 - **.Net 6:** Magic File Encoding **2.0.1**
 
 ## Transformation Considerations

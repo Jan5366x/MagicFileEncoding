@@ -1,8 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
-        <PackageVersion>3.0.0</PackageVersion>
+        <TargetFramework>net10.0</TargetFramework>
+        <PackageVersion>4.0.0</PackageVersion>
         <Title>Magic File Encoding</Title>
         <Authors>Jan Schwien</Authors>
         <Copyright>by Jan Schwien</Copyright>
@@ -18,8 +18,9 @@ Be aware of possible transformation issues if the target encoding is simpler tha
 
 It is strongly recommended to write unit tests for your use case to ensure the load and transformation works as expected.</Description>
         <Nullable>enable</Nullable>
-        <LangVersion>11</LangVersion>
-        <AssemblyVersion>3.0.0</AssemblyVersion>
+        <LangVersion>14</LangVersion>
+        <AssemblyVersion>4.0.0</AssemblyVersion>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     </PropertyGroup>
 
     <PropertyGroup>
