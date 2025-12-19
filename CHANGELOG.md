@@ -1,4 +1,5 @@
-﻿## v3.0.1
+﻿## v4.0.0
+* Switch to .Net 10.0
 * Fix code example 7 and 8 in readme
 * Adjust readme code example sto use filePath instead of filename or path
 
