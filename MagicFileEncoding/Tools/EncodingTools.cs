@@ -271,9 +271,11 @@ internal static class EncodingTools
 
         var bom = new byte[4];
         fileStream.Position = 0;
-
-        // ReSharper disable once MustUseReturnValue
+        
+        // read the BOM with dynamical length
+#pragma warning disable CA2022, S2674
         fileStream.Read(bom, 0, 4);
+#pragma warning restore CA2022
 
         return GetEncodingByBom(bom, fallbackEncoding, out _, false);
     }
