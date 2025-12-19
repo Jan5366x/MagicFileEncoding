@@ -1,7 +1,8 @@
 ﻿## v4.0.0
 * Switch to .Net 10.0
 * Fix code example 7 and 8 in readme
-* Adjust readme code example sto use filePath instead of filename or path
+* Adjust readme code example to use filePath instead of filename or path
+* Suppress warnings CA2022 and S2674 due to expected dynamic array length
 
 ## v3.0.0 - 5 Feb 2024
 * Switch to .Net 8.0
